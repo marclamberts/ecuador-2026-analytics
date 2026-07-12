@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-07-10T13:33:41+00:00",
+  "data_dir": "/Users/marclamberts/Event data/Ecuador 2026",
+  "n_headed_clearances": 3125,
+  "n_matches": 136,
+  "n_train": 2485,
+  "n_test": 640,
+  "train": {
+    "mae_x": 6.871683288479514,
+    "rmse_x": 8.697272116620812,
+    "r2_x": 0.4973379735168829,
+    "mae_y": 13.084782807187624,
+    "rmse_y": 17.088498406284167,
+    "r2_y": 0.5843799243385424,
+    "mean_landing_error": 16.10483161477971,
+    "median_landing_error": 13.642454798699545,
+    "pct_within_10_pitch_units": 0.33118712273641854,
+    "pct_within_15_pitch_units": 0.5460764587525151
+  },
+  "test": {
+    "mae_x": 7.58864593746941,
+    "rmse_x": 9.568037309870771,
+    "r2_x": 0.4082686007299312,
+    "mae_y": 14.42064197918819,
+    "rmse_y": 18.39729350247069,
+    "r2_y": 0.5179607106637389,
+    "mean_landing_error": 17.68659964314366,
+    "median_landing_error": 15.58681434463672,
+    "pct_within_10_pitch_units": 0.271875,
+    "pct_within_15_pitch_units": 0.4765625
+  },
+  "baseline_test": {
+    "mae_x": 9.820625000000001,
+    "rmse_x": 12.607667557879212,
+    "r2_x": -0.027420890933656406,
+    "mae_y": 22.044843750000002,
+    "rmse_y": 26.549990878058697,
+    "r2_y": -0.003929731263202063,
+    "mean_landing_error": 25.757483397474537,
+    "median_landing_error": 23.775825144673526,
+    "pct_within_10_pitch_units": 0.1390625,
+    "pct_within_15_pitch_units": 0.2671875
+  },
+  "notes": {
+    "event_filter": "typeId 12 clearances with qualifierId 15 header",
+    "target": "qualifierId 140/141 landing coordinates",
+    "split": "GroupShuffleSplit by match_id",
+    "baseline": "predicts the train-set median landing x/y for every test event"
+  }
+}

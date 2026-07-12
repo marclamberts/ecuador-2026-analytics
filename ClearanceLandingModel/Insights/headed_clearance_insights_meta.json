@@ -1,0 +1,26 @@
+{
+  "rows": 3125,
+  "matches": 136,
+  "player_visualized": "C. Gruezo",
+  "outputs": {
+    "event_insights": "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/headed_clearance_insights.csv",
+    "player_summary": "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/headed_clearance_player_summary.csv",
+    "team_summary": "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/headed_clearance_team_summary.csv",
+    "zone_summary": "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/headed_clearance_zone_summary.csv",
+    "visuals": [
+      "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/player_visuals/C__Gruezo_value_over_expected_map.png",
+      "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/player_visuals/C__Gruezo_next_outcome_map.png",
+      "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/player_visuals/C__Gruezo_insight_profile.png",
+      "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/player_visuals/C__Gruezo_expected_vs_actual_zone_matrix.png",
+      "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/player_value_rankings.png",
+      "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/team_value_rankings.png"
+    ],
+    "readme": "/Users/marclamberts/Event data/Ecuador 2026/ClearanceLandingModel/Insights/README.md"
+  },
+  "metric_notes": {
+    "length_oe": "actual clearance length minus model-expected clearance length",
+    "territory_oe": "actual landing x minus predicted landing x",
+    "wide_oe": "actual distance from pitch centerline minus predicted distance from centerline",
+    "clearance_value_oe": "weighted composite of territory, length, width, first touch, danger avoidance, and danger after clearance"
+  }
+}

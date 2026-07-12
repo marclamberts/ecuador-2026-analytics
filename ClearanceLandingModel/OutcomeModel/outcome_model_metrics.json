@@ -1,0 +1,36 @@
+{
+  "n_train": 2485,
+  "n_test": 640,
+  "relief_success": {
+    "train": {
+      "brier": 0.1812127890326962,
+      "positive_rate": 0.5356136820925553,
+      "mean_predicted_probability": 0.5350101756718885,
+      "roc_auc": 0.8603413859870024,
+      "log_loss": 0.5452285338523107
+    },
+    "test": {
+      "brier": 0.220493227866604,
+      "positive_rate": 0.5171875,
+      "mean_predicted_probability": 0.52930862897839,
+      "roc_auc": 0.6887924207315285,
+      "log_loss": 0.6286826722108816
+    }
+  },
+  "opponent_shot_10s": {
+    "train": {
+      "brier": 0.06890184735586545,
+      "positive_rate": 0.09215291750503019,
+      "mean_predicted_probability": 0.09290416447253193,
+      "roc_auc": 0.940844792344142,
+      "log_loss": 0.23645319312759414
+    },
+    "test": {
+      "brier": 0.08610937692713352,
+      "positive_rate": 0.0984375,
+      "mean_predicted_probability": 0.09402980084743198,
+      "roc_auc": 0.6765701081125691,
+      "log_loss": 0.30479799345290814
+    }
+  }
+}
