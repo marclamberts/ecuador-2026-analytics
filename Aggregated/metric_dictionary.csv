@@ -1,0 +1,537 @@
+metric,family,description
+accelerations,other,accelerations
+accelerations_p90,other,accelerations p90
+accurate_back_pass_pct,possession,accurate back pass pct
+accurate_back_passes,possession,accurate back passes
+accurate_back_passes_p90,possession,accurate back passes p90
+accurate_crosses,other,accurate crosses
+accurate_crosses_p90,other,accurate crosses p90
+accurate_forward_pass_pct,possession,accurate forward pass pct
+accurate_forward_passes,possession,accurate forward passes
+accurate_forward_passes_p90,possession,accurate forward passes p90
+accurate_lateral_pass_pct,possession,accurate lateral pass pct
+accurate_lateral_passes,possession,accurate lateral passes
+accurate_lateral_passes_p90,possession,accurate lateral passes p90
+accurate_left_flank_cross_pct,other,accurate left flank cross pct
+accurate_left_flank_crosses,other,accurate left flank crosses
+accurate_left_flank_crosses_p90,other,accurate left flank crosses p90
+accurate_long_pass_pct,possession,accurate long pass pct
+accurate_long_passes,possession,accurate long passes
+accurate_long_passes_p90,possession,accurate long passes p90
+accurate_right_flank_cross_pct,other,accurate right flank cross pct
+accurate_right_flank_crosses,other,accurate right flank crosses
+accurate_right_flank_crosses_p90,other,accurate right flank crosses p90
+accurate_short_medium_pass_pct,possession,accurate short medium pass pct
+accurate_short_medium_passes,possession,accurate short medium passes
+accurate_short_medium_passes_p90,possession,accurate short medium passes p90
+accurate_smart_pass_pct,possession,accurate smart pass pct
+accurate_smart_passes,possession,accurate smart passes
+accurate_smart_passes_p90,possession,accurate smart passes p90
+accurate_through_pass_pct,possession,accurate through pass pct
+accurate_through_passes,possession,accurate through passes
+accurate_through_passes_p90,possession,accurate through passes p90
+action_gda,goal_difference_added,action gda
+action_gda_p90,goal_difference_added,action gda p90
+actions,other,actions
+aerial_win_pct,defending,aerial win pct
+aerials,defending,aerials
+aerials_p90,defending,aerials p90
+aerials_won,defending,aerials won
+archetype,identity,archetype
+assists,other,assists
+assists_p90,other,assists p90
+attacking_index,model_index,attacking index
+attacking_index_pctile,model_index,attacking index pctile
+availability_score,model_index,availability score
+avg_long_pass_length,possession,avg long pass length
+avg_long_pass_length_sum,possession,avg long pass length sum
+avg_pass_length,possession,avg pass length
+avg_pass_length_sum,possession,avg pass length sum
+avg_touch_share,other,avg touch share
+backward_passes,possession,backward passes
+backward_passes_p90,possession,backward passes p90
+ball_winner_index,model_index,ball winner index
+ball_winner_index_pctile,model_index,ball winner index pctile
+blocked_or_saved_shots,shooting,blocked or saved shots
+blocks,other,blocks
+blocks_p90,other,blocks p90
+box_def_actions,defending,box def actions
+box_def_actions_p90,defending,box def actions p90
+box_defender_index,defending,box defender index
+box_defender_index_pctile,defending,box defender index pctile
+box_delivery_index,model_index,box delivery index
+box_delivery_index_pctile,model_index,box delivery index pctile
+box_entries,other,box entries
+box_entries_p90,other,box entries p90
+box_entry_rate_from_final3,progression,box entry rate from final3
+box_presence_index,model_index,box presence index
+box_presence_index_pctile,model_index,box presence index pctile
+box_pressure,defending,box pressure
+box_pressure_pm,defending,box pressure pm
+box_touch_share,other,box touch share
+box_touches,other,box touches
+box_touches_p90,other,box touches p90
+cards,other,cards
+carries,other,carries
+carries_p90,other,carries p90
+carry_distance,progression,carry distance
+carry_progression_share,progression,carry progression share
+carry_xt,progression,carry xt
+carry_xt_p90,progression,carry xt p90
+carry_xt_positive,progression,carry xt positive
+central_touch_share,other,central touch share
+central_touches,other,central touches
+central_touches_p90,other,central touches p90
+chain_xt,progression,chain xt
+chain_xt_p90,progression,chain xt p90
+chance_quality_index,model_index,chance quality index
+chance_quality_index_pctile,model_index,chance quality index pctile
+chaos_creator_index,model_index,chaos creator index
+chaos_creator_index_pctile,model_index,chaos creator index pctile
+claims,other,claims
+claims_p90,other,claims p90
+clean_sheets,other,clean sheets
+clean_sheets_p90,other,clean sheets p90
+clearances,defending,clearances
+clearances_p90,defending,clearances p90
+completed_passes,possession,completed passes
+completed_passes_p90,possession,completed passes p90
+completed_set_piece_passes,set_pieces,completed set piece passes
+completed_set_piece_passes_p90,set_pieces,completed set piece passes p90
+conceded_goals,shooting,conceded goals
+conceded_goals_p90,shooting,conceded goals p90
+connector_index,model_index,connector index
+connector_index_pctile,model_index,connector index pctile
+control_index,possession,control index
+control_value,possession,control value
+control_value_p90,possession,control value p90
+corner_crosses,set_pieces,corner crosses
+corner_crosses_p90,set_pieces,corner crosses p90
+corner_first_phase_actions,set_pieces,corner first phase actions
+corner_first_phase_actions_p90,set_pieces,corner first phase actions p90
+corner_first_phase_goals,set_pieces,corner first phase goals
+corner_first_phase_goals_p90,set_pieces,corner first phase goals p90
+corner_first_phase_shots,set_pieces,corner first phase shots
+corner_first_phase_shots_p90,set_pieces,corner first phase shots p90
+corner_first_phase_xg,set_pieces,corner first phase xg
+corner_first_phase_xg_p90,set_pieces,corner first phase xg p90
+corner_goal_rate,set_pieces,corner goal rate
+corner_goals,set_pieces,corner goals
+corner_goals_p90,set_pieces,corner goals p90
+corner_phase_actions,set_pieces,corner phase actions
+corner_phase_actions_p90,set_pieces,corner phase actions p90
+corner_second_phase_actions,set_pieces,corner second phase actions
+corner_second_phase_actions_p90,set_pieces,corner second phase actions p90
+corner_second_phase_goals,set_pieces,corner second phase goals
+corner_second_phase_goals_p90,set_pieces,corner second phase goals p90
+corner_second_phase_shots,set_pieces,corner second phase shots
+corner_second_phase_shots_p90,set_pieces,corner second phase shots p90
+corner_second_phase_xg,set_pieces,corner second phase xg
+corner_second_phase_xg_p90,set_pieces,corner second phase xg p90
+corner_second_phase_xg_share,set_pieces,corner second phase xg share
+corner_shots,set_pieces,corner shots
+corner_shots_p90,set_pieces,corner shots p90
+corner_threat_index,set_pieces,corner threat index
+corner_threat_index_pctile,set_pieces,corner threat index pctile
+corner_xg,set_pieces,corner xg
+corner_xg_p90,set_pieces,corner xg p90
+corner_xg_per_corner,set_pieces,corner xg per corner
+corners,set_pieces,corners
+corners_p90,set_pieces,corners p90
+counter_threat_actions,other,counter threat actions
+counter_threat_actions_p90,other,counter threat actions p90
+counterpress_regains,other,counterpress regains
+counterpress_regains_p90,other,counterpress regains p90
+creative_engine_index,model_index,creative engine index
+creative_engine_index_pctile,model_index,creative engine index pctile
+cross_accuracy,other,cross accuracy
+cross_threat,other,cross threat
+cross_threat_p90,other,cross threat p90
+cross_threat_per_cross,other,cross threat per cross
+cross_xt,progression,cross xt
+cross_xt_p90,progression,cross xt p90
+cross_xt_per_cross,progression,cross xt per cross
+crosses,other,crosses
+crosses_into_box,other,crosses into box
+crosses_into_box_p90,other,crosses into box p90
+crosses_p90,other,crosses p90
+crosses_to_goalie_box,shooting,crosses to goalie box
+crosses_to_goalie_box_p90,shooting,crosses to goalie box p90
+crossing_value_index,model_index,crossing value index
+crossing_value_index_pctile,model_index,crossing value index pctile
+cutback_share,other,cutback share
+cutbacks,other,cutbacks
+cutbacks_p90,other,cutbacks p90
+danger,other,danger
+danger_p90,other,danger p90
+danger_per100_actions,other,danger per100 actions
+danger_per_action,other,danger per action
+danger_per_touch,other,danger per touch
+date,identity,date
+dead_ball_threat_index,set_pieces,dead ball threat index
+dead_ball_threat_index_pctile,set_pieces,dead ball threat index pctile
+deep_completed_crosses,other,deep completed crosses
+deep_completed_crosses_p90,other,deep completed crosses p90
+deep_completions,other,deep completions
+deep_completions_p90,other,deep completions p90
+deep_crosses,other,deep crosses
+deep_crosses_p90,other,deep crosses p90
+deep_touches,other,deep touches
+deep_touches_p90,other,deep touches p90
+def_action_share,defending,def action share
+def_actions,defending,def actions
+def_actions_p90,defending,def actions p90
+def_third_action_share,defending,def third action share
+defensive_duel_index,defending,defensive duel index
+defensive_duel_index_pctile,defending,defensive duel index pctile
+defensive_duel_win_pct,defending,defensive duel win pct
+defensive_duels,defending,defensive duels
+defensive_duels_p90,defending,defensive duels p90
+defensive_duels_won,defending,defensive duels won
+defensive_duels_won_p90,defending,defensive duels won p90
+defensive_index,defending,defensive index
+defensive_index_pctile,defending,defensive index pctile
+defensive_range_index,defending,defensive range index
+defensive_range_index_pctile,defending,defensive range index pctile
+defensive_security_index,possession,defensive security index
+defensive_security_index_pctile,possession,defensive security index pctile
+defensive_third_def_actions,defending,defensive third def actions
+defensive_third_def_actions_p90,defending,defensive third def actions p90
+direct_free_kick_on_target_pct,other,direct free kick on target pct
+direct_free_kicks,other,direct free kicks
+direct_free_kicks_on_target,other,direct free kicks on target
+direct_free_kicks_on_target_p90,other,direct free kicks on target p90
+direct_free_kicks_p90,other,direct free kicks p90
+directness_index,model_index,directness index
+directness_index_pctile,model_index,directness index pctile
+dispossessed,other,dispossessed
+disruption_index,xdisruption,disruption index
+disruption_index_pctile,xdisruption,disruption index pctile
+duel_win_pct,other,duel win pct
+duels,other,duels
+duels_p90,other,duels p90
+duels_won,other,duels won
+early_crosses,other,early crosses
+early_crosses_p90,other,early crosses p90
+end_minute,other,end minute
+failed_take_ons,other,failed take ons
+field_tilt,other,field tilt
+field_tilt_touch,other,field tilt touch
+field_tilt_touch_p90,other,field tilt touch p90
+final3_entries,other,final3 entries
+final3_entries_p90,other,final3 entries p90
+final3_touch_share,other,final3 touch share
+final3_touches,other,final3 touches
+final3_touches_p90,other,final3 touches p90
+final_third_def_actions,defending,final third def actions
+final_third_def_actions_p90,defending,final third def actions p90
+finisher_index,shooting,finisher index
+finisher_index_pctile,shooting,finisher index pctile
+finishing_ratio,shooting,finishing ratio
+forward_pass_pct,possession,forward pass pct
+forward_passes,possession,forward passes
+forward_passes_p90,possession,forward passes p90
+fouled,other,fouled
+fouled_p90,other,fouled p90
+fouls,other,fouls
+fouls_p90,other,fouls p90
+free_kick_crosses,other,free kick crosses
+free_kick_crosses_p90,other,free kick crosses p90
+free_kicks,other,free kicks
+free_kicks_p90,other,free kicks p90
+ga_on,goal_difference_added,ga on
+gd,other,gd
+gd_on,goal_difference_added,gd on
+gd_on_p90,goal_difference_added,gd on p90
+gda,goal_difference_added,gda
+gda_p90,goal_difference_added,gda p90
+gda_p90_pctile,goal_difference_added,gda p90 pctile
+gda_reliable_p90,goal_difference_added,gda reliable p90
+gda_share_of_team,goal_difference_added,gda share of team
+gf_on,goal_difference_added,gf on
+gk_actions,other,gk actions
+gk_actions_p90,other,gk actions p90
+goal_conversion_pct,shooting,goal conversion pct
+goalkeeper_activity_index,shooting,goalkeeper activity index
+goalkeeper_activity_index_pctile,shooting,goalkeeper activity index pctile
+goals,shooting,goals
+goals_minus_xg,shooting,goals minus xg
+goals_p90,shooting,goals p90
+ground_duel_win_pct,other,ground duel win pct
+ground_duels,other,ground duels
+ground_duels_p90,other,ground duels p90
+ground_duels_won,other,ground duels won
+ground_duels_won_p90,other,ground duels won p90
+halfspace_touches,other,halfspace touches
+halfspace_touches_p90,other,halfspace touches p90
+halfspace_value_index,model_index,halfspace value index
+halfspace_value_index_pctile,model_index,halfspace value index pctile
+head_goals,shooting,head goals
+head_goals_p90,shooting,head goals p90
+head_shots,shooting,head shots
+high_def_action_share,defending,high def action share
+high_press_defending_index,defending,high press defending index
+high_press_defending_index_pctile,defending,high press defending index pctile
+high_regains,other,high regains
+high_regains_p90,other,high regains p90
+high_value_touches,other,high value touches
+high_value_touches_p90,other,high value touches p90
+impact_score,model_index,impact score
+impact_score_raw,model_index,impact score raw
+impact_score_raw_pctile,model_index,impact score raw pctile
+incomplete_passes,possession,incomplete passes
+interceptions,defending,interceptions
+interceptions_p90,defending,interceptions p90
+keeper_pickups,other,keeper pickups
+keeper_pickups_p90,other,keeper pickups p90
+keeper_sweeper_actions,other,keeper sweeper actions
+keeper_sweeper_actions_p90,other,keeper sweeper actions p90
+key_passes,possession,key passes
+key_passes_p90,possession,key passes p90
+last_line_actions,other,last line actions
+last_line_actions_p90,other,last line actions p90
+lateral_passes,possession,lateral passes
+lateral_passes_p90,possession,lateral passes p90
+left_flank_crosses,other,left flank crosses
+left_flank_crosses_p90,other,left flank crosses p90
+long_passes,possession,long passes
+losses,possession,losses
+losses_p90,possession,losses p90
+match,identity,match
+match_file,identity,match file
+match_length,other,match length
+matches,other,matches
+mid_third_def_action_share,defending,mid third def action share
+middle_third_def_actions,defending,middle third def actions
+middle_third_def_actions_p90,defending,middle third def actions p90
+minutes,other,minutes
+missed_shots,shooting,missed shots
+needle_mover_index,model_index,needle mover index
+needle_mover_index_pctile,model_index,needle mover index pctile
+non_penalty_goals,shooting,non penalty goals
+non_penalty_goals_p90,shooting,non penalty goals p90
+offensive_duel_win_pct,other,offensive duel win pct
+offensive_duels,other,offensive duels
+offensive_duels_p90,other,offensive duels p90
+offensive_duels_won,other,offensive duels won
+offensive_duels_won_p90,other,offensive duels won p90
+on_target_pct,other,on target pct
+on_target_shots,shooting,on target shots
+open_play_actions,other,open play actions
+open_play_cross_share,other,open play cross share
+open_play_crosses,other,open play crosses
+open_play_crosses_p90,other,open play crosses p90
+opp_goals_total,shooting,opp goals total
+opp_shots_on_target_total,shooting,opp shots on target total
+opp_shots_total,shooting,opp shots total
+opp_xg_total,shooting,opp xg total
+opponent_touch_share,other,opponent touch share
+own_third_security_touch,possession,own third security touch
+padj_interceptions,defending,padj interceptions
+padj_tackles,defending,padj tackles
+pass_completion_above_expected,possession,pass completion above expected
+pass_completion_oe,xpass,pass completion oe
+pass_completion_oe_p90,xpass,pass completion oe p90
+pass_completion_oe_per_pass,xpass,pass completion oe per pass
+pass_distance,possession,pass distance
+pass_pct,possession,pass pct
+pass_progression_share,progression,pass progression share
+pass_value_over_expected,xpass,pass value over expected
+pass_value_over_expected_p90,xpass,pass value over expected p90
+passes,possession,passes
+passes_into_box,possession,passes into box
+passes_into_box_p90,possession,passes into box p90
+passes_into_final3,possession,passes into final3
+passes_into_final3_p90,possession,passes into final3 p90
+passes_p90,possession,passes p90
+passing_added_index,xpass,passing added index
+passing_added_index_pctile,xpass,passing added index pctile
+penalties_faced,other,penalties faced
+penalties_faced_p90,other,penalties faced p90
+penalty_conversion_pct,other,penalty conversion pct
+penalty_goals,shooting,penalty goals
+penalty_goals_p90,shooting,penalty goals p90
+penalty_shots,shooting,penalty shots
+penalty_shots_p90,shooting,penalty shots p90
+player,identity,player
+player_id,identity,player id
+player_minutes,other,player minutes
+players_used,other,players used
+position_group,identity,position group
+possession_kept,other,possession kept
+post_shots,shooting,post shots
+ppda_proxy,other,ppda proxy
+press_resistance_index,model_index,press resistance index
+press_resistance_index_pctile,model_index,press resistance index pctile
+pressure_regains,defending,pressure regains
+pressure_regains_p90,defending,pressure regains p90
+prevented_goals,shooting,prevented goals
+prevented_goals_p90,shooting,prevented goals p90
+progression_distance,progression,progression distance
+progression_index,progression,progression index
+progression_index_pctile,progression,progression index pctile
+progressive_carries,progression,progressive carries
+progressive_carries_p90,progression,progressive carries p90
+progressive_pass_pct,progression,progressive pass pct
+progressive_pass_per_complete,progression,progressive pass per complete
+progressive_passes,progression,progressive passes
+progressive_passes_p90,progression,progressive passes p90
+progressive_runs,progression,progressive runs
+progressive_runs_p90,progression,progressive runs p90
+psxg_proxy,shooting,psxg proxy
+psxg_proxy_p90,shooting,psxg proxy p90
+punches,other,punches
+punches_p90,other,punches p90
+rapm_attack_p90,rapm,rapm attack p90
+rapm_defense_p90,rapm,rapm defense p90
+rapm_percentile,rapm,rapm percentile
+rapm_raw_p90,rapm,rapm raw p90
+rapm_regularized_p90,rapm,rapm regularized p90
+rapm_total,rapm,rapm total
+received_long_passes,possession,received long passes
+received_long_passes_p90,possession,received long passes p90
+received_passes,possession,received passes
+received_passes_p90,possession,received passes p90
+recoveries,defending,recoveries
+recoveries_p90,defending,recoveries p90
+regain_to_threat_rate,other,regain to threat rate
+reliability,other,reliability
+rest_defence_index,defending,rest defence index
+rest_defence_index_pctile,defending,rest defence index pctile
+rest_defence_proxy,defending,rest defence proxy
+right_flank_crosses,other,right flank crosses
+right_flank_crosses_p90,other,right flank crosses p90
+role,identity,role
+save_rate,other,save rate
+saves,other,saves
+saves_p90,other,saves p90
+season,identity,season
+second_assists,other,second assists
+second_assists_p90,other,second assists p90
+second_phase_corner_index,set_pieces,second phase corner index
+second_phase_corner_index_pctile,set_pieces,second phase corner index pctile
+security_index,possession,security index
+security_index_pctile,possession,security index pctile
+security_pct,possession,security pct
+set_piece_actions,set_pieces,set piece actions
+set_piece_box_entries,set_pieces,set piece box entries
+set_piece_box_entries_p90,set_pieces,set piece box entries p90
+set_piece_creator_index,set_pieces,set piece creator index
+set_piece_creator_index_pctile,set_pieces,set piece creator index pctile
+set_piece_cross_share,set_pieces,set piece cross share
+set_piece_crosses,set_pieces,set piece crosses
+set_piece_crosses_p90,set_pieces,set piece crosses p90
+set_piece_goals,set_pieces,set piece goals
+set_piece_goals_p90,set_pieces,set piece goals p90
+set_piece_pass_pct,set_pieces,set piece pass pct
+set_piece_passes,set_pieces,set piece passes
+set_piece_passes_p90,set_pieces,set piece passes p90
+set_piece_shots,set_pieces,set piece shots
+set_piece_shots_p90,set_pieces,set piece shots p90
+set_piece_threat_per_action,set_pieces,set piece threat per action
+set_piece_xg,set_pieces,set piece xg
+set_piece_xg_p90,set_pieces,set piece xg p90
+set_piece_xt,set_pieces,set piece xt
+set_piece_xt_p90,set_pieces,set piece xt p90
+shirt_no,identity,shirt no
+short_medium_passes,possession,short medium passes
+short_medium_passes_p90,possession,short medium passes p90
+shot_assists,shooting,shot assists
+shot_assists_p90,shooting,shot assists p90
+shots,shooting,shots
+shots_against,shooting,shots against
+shots_against_p90,shooting,shots against p90
+shots_on_target_against,shooting,shots on target against
+shots_on_target_against_p90,shooting,shots on target against p90
+shots_p90,shooting,shots p90
+six_yard_crosses,other,six yard crosses
+six_yard_crosses_p90,other,six yard crosses p90
+smart_passes,possession,smart passes
+smart_passes_p90,possession,smart passes p90
+smothers,other,smothers
+smothers_p90,other,smothers p90
+start_minute,other,start minute
+started,other,started
+sub_off,other,sub off
+sub_on,other,sub on
+successful_attacking_actions,other,successful attacking actions
+successful_attacking_actions_p90,other,successful attacking actions p90
+successful_box_entries,other,successful box entries
+successful_take_ons,other,successful take ons
+tackle_win_pct,defending,tackle win pct
+tackles,defending,tackles
+tackles_p90,defending,tackles p90
+tackles_won,defending,tackles won
+take_on_pct,other,take on pct
+take_ons,other,take ons
+take_ons_p90,other,take ons p90
+team,identity,team
+team_action_value,other,team action value
+team_gd_p90_context,progression,team gd p90 context
+team_gda,goal_difference_added,team gda
+team_gda_pm,goal_difference_added,team gda pm
+team_id,identity,team id
+team_threat,other,team threat
+team_threat_pm,other,team threat pm
+team_touch_share,other,team touch share
+territory_added,progression,territory added
+territory_added_p90,progression,territory added p90
+territory_balance,progression,territory balance
+territory_domination_index,progression,territory domination index
+territory_domination_index_pctile,progression,territory domination index pctile
+territory_per_action,progression,territory per action
+third_assists,other,third assists
+third_assists_p90,other,third assists p90
+threat,other,threat
+threat_p90,other,threat p90
+threat_p90_pctile,model_index,threat p90 pctile
+threat_per_touch,other,threat per touch
+threat_reliable_p90,other,threat reliable p90
+threat_share_of_team,other,threat share of team
+through_passes,possession,through passes
+through_passes_p90,possession,through passes p90
+throw_ins,other,throw ins
+throw_ins_p90,other,throw ins p90
+touches,other,touches
+touches_p90,other,touches p90
+transition_index,model_index,transition index
+transition_index_pctile,model_index,transition index pctile
+transition_threat,other,transition threat
+two_way_value,other,two way value
+two_way_value_p90,other,two way value p90
+vertical_threat_index,model_index,vertical threat index
+vertical_threat_index_pctile,model_index,vertical threat index pctile
+volume_quality_index,model_index,volume quality index
+volume_quality_index_pctile,model_index,volume quality index pctile
+waltzing_all_round_index,model_index,waltzing all round index
+waltzing_all_round_index_pctile,model_index,waltzing all round index pctile
+wide_progression_index,progression,wide progression index
+wide_progression_index_pctile,progression,wide progression index pctile
+wide_touch_share,other,wide touch share
+wide_touches,other,wide touches
+wide_touches_p90,other,wide touches p90
+xa,other,xa
+xa_p90,other,xa p90
+xdisruption,xdisruption,xdisruption
+xdisruption_p90,xdisruption,xdisruption p90
+xdisruption_per_def_action,xdisruption,xdisruption per def action
+xg,shooting,xg
+xg_against,shooting,xg against
+xg_against_p90,shooting,xg against p90
+xg_p90,shooting,xg p90
+xg_per_box_touch,shooting,xg per box touch
+xg_per_shot,shooting,xg per shot
+xpass,xpass,xpass
+xpass_completion_pct,xpass,xpass completion pct
+xpass_p90,xpass,xpass p90
+xt,progression,xt
+xt_negative,progression,xt negative
+xt_p90,progression,xt p90
+xt_p90_pctile,progression,xt p90 pctile
+xt_per100_actions,progression,xt per100 actions
+xt_per100_passes,progression,xt per100 passes
+xt_per_action,progression,xt per action
+xt_per_touch,progression,xt per touch
+xt_positive,progression,xt positive
+xt_positive_p90,progression,xt positive p90
+xt_risk_reward,progression,xt risk reward

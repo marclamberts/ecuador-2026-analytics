@@ -1,0 +1,20 @@
+{
+  "source": "/Users/marclamberts/Event data/Ecuador 2026",
+  "output": "/Users/marclamberts/Event data/Ecuador 2026/Aggregated",
+  "excel_workbook": "/Users/marclamberts/Downloads/Waltzing Analytics/Ecuador 2026 - Season Data.xlsx",
+  "created": "2026-07-09T11:13:08",
+  "credit": "Source: Opta/StatsPerform | Models by Marc Lamberts - Waltzing Analytics | July 9, 2026",
+  "matches_loaded": 136,
+  "events_loaded": 208136,
+  "players": 425,
+  "teams": 16,
+  "notes": [
+    "xG, xT, danger, and post-shot xG are transparent proxy models built from event coordinates and qualifiers.",
+    "GDA combines goals while on pitch with action value. On-pitch intervals are estimated from lineup and substitution events.",
+    "xPass estimates pass completion probability from distance, direction, end zone, cross and set-piece context.",
+    "xDisruption estimates defensive possession disruption value from location, action type, success and regain context.",
+    "RAPM is a regularized adjusted plus-minus style proxy using on-pitch GD, team context, action value, xDisruption and xPass value.",
+    "Corner first phase is corner delivery plus next 12 seconds; second phase is 12-45 seconds after the corner for the same team.",
+    "Notebook reads directly from /Users/marclamberts/Event data/Ecuador 2026."
+  ]
+}
