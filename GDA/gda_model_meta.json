@@ -1,0 +1,17 @@
+{
+  "created_at": "2026-07-09T00:50:43",
+  "source": "/Users/marclamberts/Event data/Ecuador 2026",
+  "definition": "GDA = on-pitch goals scored minus goals conceded, plus player on-ball action value from JSON event actions.",
+  "on_pitch_component": "goals_for_on - goals_against_on while player stint is active",
+  "action_component": "JSON-only Markov possession value over pitch zones; shot rewards learned from smoothed empirical goal rates by shot zone.",
+  "red_card_handling": "typeId 17 with qualifier 32 or 33 ends the stint at event time",
+  "substitution_handling": "typeId 18 ends stint; typeId 19 starts stint",
+  "files": [
+    "gda_player_summary.csv",
+    "gda_player_match_on_pitch.csv",
+    "gda_player_stints.csv",
+    "gda_action_values.csv",
+    "gda_team_summary.csv",
+    "gda_zone_values.csv"
+  ]
+}
