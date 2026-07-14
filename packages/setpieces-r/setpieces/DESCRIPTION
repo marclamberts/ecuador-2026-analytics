@@ -1,0 +1,19 @@
+Package: setpieces
+Type: Package
+Title: Extract and Analyze Football Set-Piece Events from Opta Data
+Version: 0.1.0
+Authors@R: person("Marc", "Lamberts", email = "waltzinganalytics@gmail.com", role = c("aut", "cre"))
+Description: Tools to parse Opta MA1-style football event data and
+    extract, classify, and analyze set pieces -- corners, free kicks,
+    throw-ins, and penalties -- including delivery-zone breakdowns and
+    second-ball contest detection.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    jsonlite,
+    stats
+Suggests:
+    ggplot2,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.3.1

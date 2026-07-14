@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# R
+*.Rcheck/
+*.tar.gz
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS
+.DS_Store
