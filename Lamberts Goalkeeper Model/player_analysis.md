@@ -1,67 +1,72 @@
 # Player Analysis — Lamberts Goalkeeper Model
 
-Ecuador 2026 season. 15 goalkeepers qualify for ranking (≥450 minutes played); 14 more were observed below that threshold and are excluded from ranking but present in `goalkeeper_match_value.csv`. Grounded entirely in `goalkeeper_season_value_model.csv` — every number below is pulled from that file, not estimated.
+Ecuador 2026 season. 29 distinct goalkeepers were observed; 18 qualify for ranking (≥450 minutes played). Grounded entirely in `goalkeeper_season_value_model.csv` — every number below is pulled from that file, not estimated, and every strength/weakness claim is cross-checked against `visuals/player_strength_weakness_board.png` and `visuals/submodel_specialists_board.png` rather than eyeballed from raw stats.
+
+> **Note on a data correction:** an earlier version of this document was built before a bug fix to the model's season-aggregation step (see `lamberts_goalkeeper_model`'s `model.py`) — the aggregator's team/player *name* fields are occasionally wrong for a given match row (mislabeled team, or the player name falling back to a raw id string), which silently fragmented most keepers' seasons into bogus single-match sub-groups keyed off the wrong label. Grouping now keys off `team_id`/`player_id` instead, which are reliable. That fix changed minutes, matches, and every submodel for nearly every keeper in the pool (affected 21 of 29 identities, ~95% of match rows) and reshuffled the ranking substantially — e.g. F. Ferrero went from 719 minutes/7 matches to 1734 minutes/17 matches. This version reflects the corrected data.
 
 ## Headline ranking
 
-| # | Player | Team | Index | Pctile | Min / Mtc | Standout strength | Standout weakness |
+| # | Player | Team | Index | Pctile | Min / Mtc | Strength | Weakness |
 |---|---|---|---|---|---|---|---|
-| 1 | J. Angulo | Leones FC | 69.5 | 100 | 528 / 5 | Shot-stopping (100) & progressive distribution (100) | Discipline (7) — 3 cards in 5 matches |
-| 1 | D. Cabezas | Libertad FC | 69.5 | 93 | 809 / 8 | Save-difficulty-weighted stopping (100) | Reliability, ball security & discipline — three-way tie at 33 |
-| 3 | B. Heras | Delfín SC | 68.2 | 87 | 720 / 7 | Big-chance denial, reliability, sweeper activity — three 100s | Ball security & discipline (20 each) — 1 error, 2 cards in 720 minutes |
-| 4 | R. Rodríguez | CSD Macará | 61.5 | 80 | 704 / 7 | Balanced across categories, no extreme weakness | Penalty save ability (10) — 0 saves on 2 penalties faced |
-| 5 | G. Napa | Guayaquil City FC | 60.9 | 73 | 1141 / 11 | Availability (100) — ever-present, highest distribution volume (424 passes) | Distribution accuracy (7) — worst in the pool at −6.17 pass value over expected |
-| 6 | R. Formento | Mushuc Runa SC | 58.7 | 67 | 1031 / 10 | Distribution accuracy (100), highest xT from passing (20.6) | Reliability, claiming/command, penalty saves & discipline — four-way tie at 27 |
-| 7 | F. Ferrero | CD Cuenca | 56.4 | 60 | 719 / 7 | Solid shot-stopping volume | Reliability (7) — most match-to-match GPAE volatility in the pool |
-| 8 | R. Romo | CD Universidad Católica | 49.9 | 53 | 697 / 7 | Discipline (100) — zero cards, zero fouls | Big-chance denial (10) — worst in the pool |
-| 9 | S. Razzeto | CD Técnico Universitario | 48.8 | 47 | 923 / 9 | Even, unremarkable across categories | Distribution involvement (7) — fewest passes relative to minutes |
-| 10 | R. Silva | Orense SC | 48.5 | 40 | 840 / 8 | Ball security & discipline (93 each) | Reliability (13) — most volatile shot-stopping match to match |
-| 11 | G. Valle | LDU Quito | 48.3 | 33 | 522 / 5 | — | Availability (7) — thinnest sample in the ranked pool; progressive distribution (7) |
-| 12 | J. Contreras | Barcelona SC | 43.1 | 27 | 715 / 7 | — | Claiming/command (7) — worst in the pool, 0 claims all season |
-| 13 | F. Zambrano | Manta FC | 40.4 | 20 | 607 / 6 | Penalty saves (97) | Shot-stopping (GPAE −2.98) & distribution involvement — tied at 13 |
-| 14 | A. Quintana | CSD Independiente del Valle | 39.1 | 13 | 917 / 9 | Claiming/command (100) — busiest, most commanding on crosses | Shot-stopping (7) — worst GPAE in the pool at −4.89 |
-| 15 | H. Piedra | SD Aucas | 37.5 | 7 | 1124 / 11 | Ball security (100) — zero tagged errors, lowest turnover rate per 90 in the pool | Save-difficulty-weighted stopping & sweeper activity — tied at 7, despite most minutes played |
+| 1 | J. Angulo | Leones FC | 72.2 | 100 | 828 / 8 | Big-Chance Denial (100) | Discipline (6) |
+| 2 | F. Ferrero | CD Cuenca | 69.8 | 94 | 1734 / 17 | Distribution Vol. (94) | Reliability (22) |
+| 3 | L. Nazareno | Leones FC | 67.0 | 89 | 949 / 9 | Save Difficulty (94) | Availability (17) |
+| 4 | G. Napa | Guayaquil City FC | 66.4 | 83 | 1583 / 16 | Goals Prevented (100) | Distribution Acc. (6) |
+| 5 | J. Contreras | Barcelona SC | 64.6 | 78 | 1652 / 16 | Goals Prevented (83) | Claiming/Command (11) |
+| 6 | B. Heras | Delfín SC | 62.8 | 72 | 1230 / 12 | Sweeper Activity (100) | Claiming/Command (6) |
+| 7 | G. Valle | LDU Quito | 59.4 | 67 | 1440 / 14 | Claiming/Command (83) | Progressive Value (22) |
+| 8 | P. Ortíz | CS Emelec | 56.9 | 61 | 1540 / 15 | Discipline (94) | Ball Security (28) |
+| 9 | R. Romo | CD Universidad Católica | 55.8 | 56 | 1411 / 14 | Reliability (100) | Big-Chance Denial (6) |
+| 10 | D. Cabezas | Libertad FC | 52.3 | 50 | 1732 / 17 | Sweeper Activity (94) | Ball Security (17) |
+| 11 | R. Formento | Mushuc Runa SC | 50.4 | 44 | 1763 / 17 | Distribution Acc. (100) | Reliability (6) |
+| 12 | R. Silva | Orense SC | 48.9 | 39 | 1660 / 16 | Discipline (89) | Reliability (17) |
+| 13 | R. Rodríguez | CSD Macará | 46.3 | 33 | 1408 / 14 | Reliability (72) | Penalty Saves (8) |
+| 14 | S. Razzeto | CD Técnico Universitario | 43.4 | 28 | 1426 / 14 | Ball Security (94) | Distribution Vol. (6) |
+| 15 | A. Quintana | CSD Independiente del Valle | 36.9 | 22 | 1311 / 13 | Claiming/Command (100) | Goals Prevented (11) |
+| 16 | F. Zambrano | Manta FC | 35.8 | 17 | 1621 / 16 | Availability (78) | Big-Chance Denial (11) |
+| 17 | H. Piedra | SD Aucas | 33.8 | 11 | 1749 / 17 | Ball Security (100) | Save Difficulty (6) |
+| 18 | J. Cárdenas | Delfín SC | 27.1 | 6 | 511 / 5 | Sweeper Activity (78) | Goals Prevented (6) |
 
 ## Reading the top of the table
 
-**J. Angulo and D. Cabezas are statistically tied (69.5 each)** but are different players. Angulo's index rests on 5 matches — his shot-stopping and progressive-distribution scores are both perfect 100s, but `sample_size_confidence.png` flags him as below-median shots faced (79 shots faced vs. a pool median of ~88), so some of that separation could compress with more matches. Cabezas has nearly double the sample (809 min / 8 matches, 155 shots faced — comfortably above median) and still lands in the same tier, which is the more trustworthy of the two ties. If you need to pick one for a single season-defining decision, Cabezas is the safer bet on data volume alone; Angulo is the higher-ceiling small-sample story.
+**J. Angulo leads outright (72.2)**, with a perfect Big-Chance Denial score (100) and one of the two best penalty-save records in the pool — but his weakest dimension, Discipline (6th percentile), reflects 3 cards across just 8 matches, a real availability risk if it continues. His 132 shots faced is now a reasonably solid sample (up from a thin 79 before the data fix), though still below the pool median (~171).
 
-**B. Heras at #3 (68.2) is the most rounded elite profile in the pool** — three separate 100-scores (big-chance denial, reliability, sweeper activity), meaning he isn't just good on volume, he's *consistent* match to match and specifically excellent on the highest-danger shots he faces. His actual weak points are ball security and discipline (both score 20) — 1 tagged error plus a below-average distribution turnover rate, and 2 cards inside just 720 minutes. His distribution accuracy is unremarkable but not a weakness (53rd percentile) — he's a shot-stopper and sweeper first, and the discipline/security dip is the real price of that profile.
+**F. Ferrero at #2 (69.8) has the largest sample in the pool that isn't padded by weak performance** — 1734 minutes across 17 matches, the joint-most matches played, with a strong all-around profile: he's the "elite all-round" reference point in `visuals/shot_stopping_vs_secondary_skills.png` (above-average on both shot-stopping and every secondary category simultaneously, at his best on Distribution Volume). His only real gap is Reliability (22nd percentile) — his shot-stopping output swings more match to match than most.
 
-## The submodel specialists (best-in-pool per category)
+**G. Napa is the pool's most decorated specialist** — he leads 3 of the 13 submodels outright (Goals Prevented, Save Difficulty, Distribution Volume), more than anyone else, per `visuals/submodel_specialists_board.png`. But he's also the clearest volume-without-quality outlier in the league: among keepers with above-median pass volume, he has the *worst* pass value over expected in the entire dataset (-0.36 per 90, `visuals/distribution_volume_vs_quality.png`). He's constantly involved in build-up but that involvement is actively subtracting value relative to what an average pass in his situations should produce — worth checking on video whether that's forced long clearances under pressure (tactically defensible even if the model scores it low) or genuine distribution risk.
 
-| Submodel | Leader | What it says about them |
+## The submodel specialists (leader per category)
+
+| Submodel | Leader | Score |
 |---|---|---|
-| Shot-Stopping (Goals Prevented) | J. Angulo | Best goals-prevented-vs-PSxG rate in the pool |
-| Save Difficulty-Weighted | D. Cabezas | Saves the *hardest* shots he faces, not just the easy ones |
-| Big-Chance Denial | B. Heras | Best save rate specifically on xG ≥ 0.30 chances |
-| Reliability | B. Heras | Least match-to-match volatility in shot-stopping output |
-| Claiming/Command | A. Quintana | Most claims+punches+smothers relative to crosses faced |
-| Sweeper Activity | B. Heras | Most proactive off-line defending (sweeper actions + pickups) |
-| Distribution Involvement | G. Napa | Highest raw pass volume (424 passes, 11 matches) |
-| Distribution Accuracy | R. Formento | Best pass value over expected (xPass model) |
-| Progressive Distribution | J. Angulo | Most xT generated from his own passing |
-| Ball Security (inverted error risk) | H. Piedra | Zero tagged errors and lowest turnover rate per 90 |
-| Penalty Saves | B. Heras | Best Bayesian-shrunk penalty save rate |
-| Discipline | R. Romo | Zero cards, zero fouls all season |
-| Availability | G. Napa | Played closest to 100% of his team's possible minutes |
+| Goals Prevented | G. Napa ★ | 100 |
+| Save Difficulty | G. Napa ★ | 100 |
+| Big-Chance Denial | J. Angulo ★ | 100 |
+| Reliability | R. Romo ★ | 100 |
+| Penalty Saves | J. Angulo ★ | 97 |
+| Claiming/Command | A. Quintana | 100 |
+| Sweeper Activity | B. Heras | 100 |
+| Distribution Vol. | G. Napa ★ | 100 |
+| Distribution Acc. | R. Formento ★ | 100 |
+| Progressive Value | R. Formento ★ | 100 |
+| Ball Security | H. Piedra | 100 |
+| Discipline | R. Romo ★ | 100 |
+| Availability | F. Ferrero | 78 |
 
-B. Heras shows up as the category leader **three times** (big-chance denial, reliability, sweeper activity) — the most of anyone. J. Angulo (goals prevented, progressive value) and G. Napa (distribution volume, availability) each lead twice; everyone else leads at most once. See `visuals/submodel_specialists_board.png` for the full leaderboard, and `visuals/composite_score_decomposition.png` for how Heras's shot-stopping segment stacks up against the rest of the pool.
+★ = leads more than one submodel. G. Napa leads the most (3); J. Angulo, R. Romo, and R. Formento each lead 2. No keeper hit 100 on Availability this season — F. Ferrero's 78th percentile is the closest anyone got to playing every possible minute.
 
 ## Two profiles worth flagging specifically
 
-**G. Napa — volume without quality in distribution.** He's the most durable keeper in the league (100 availability, most minutes, most matches) and passes more than anyone, but his `pass_value_over_expected` is **−6.17**, the single worst number of any submodel-metric pair in the entire pool (next-worst is A. Quintana at −0.52 — Napa isn't just last, he's an outlier). He's a keeper who's constantly involved in the build-up but is actively giving away value relative to what an average pass in his situations should produce. Worth checking on the eye test whether that's forced long clearances under pressure (which the model would score as low-value even if tactically sound) or genuine technical passing risk.
+**"Busy but leaky" — A. Quintana and R. Formento.** Both have a genuine standout secondary skill (Quintana leads Claiming/Command outright at 100; Formento leads both Distribution Accuracy and Progressive Value at 100 each) that gets outweighed by the model's largest single weight, shot-stopping. Quintana's Goals Prevented score (11th percentile) is his worst dimension; Formento's shot-stopping submodels average in the low 30s despite his distribution numbers being the best in the league. `visuals/shot_stopping_vs_secondary_skills.png` places both clearly in the "weak shot-stopping, strong elsewhere" quadrant — a flag for video review on positioning/shot-stopping technique specifically, not a verdict on their overall goalkeeping.
 
-**A. Quintana and H. Piedra — busy but leaky.** Both rank in the bottom two overall, and both have a real defensible strength (Quintana: best claiming/command in the pool; Piedra: best ball security, zero errors) that gets outweighed by the largest single component in the composite weighting — shot-stopping. Quintana's GPAE (−4.89) and Piedra's (−4.27) are the two worst in the league. `visuals/shot_stopping_diagnostic.png` shows both sitting well above the "conceded more than PSxG predicted" line. This could reflect genuine shot-stopping weakness, weak defensive cover in front of them, or both — the model can't separate keeper skill from team context (see the Caveats section of the main README), so this is a flag for video review, not a final verdict.
+**F. Ferrero — elite all-round.** The only keeper simultaneously above the pool median on both shot-stopping and every other category combined (see the same chart, top-right quadrant). Combined with the largest reliable sample in the pool (17 matches), he's the season's most complete goalkeeper by this model even though he ranks #2 on the composite index — J. Angulo's #1 spot rests on a higher peak (perfect Big-Chance Denial) rather than broader coverage.
 
 ## Small-sample caveats
 
-Per `visuals/minutes_threshold_sensitivity.png` and `sample_size_confidence.png`:
-
-- **J. Angulo (5 matches, 79 shots faced) and G. Valle (5 matches, 66 shots faced)** have the thinnest samples in the ranked pool. Angulo's #1 rank should be read as "best signal so far," not "proven best."
-- **R. Rodríguez has faced only 2 penalties** and saved neither — the Bayesian shrinkage pulls his penalty-save score away from 0%, but with n=2 that submodel contributes almost no real information about him specifically.
-- Keepers with **0 big chances saved out of few faced** (e.g., R. Romo: worst big-chance-denial score off a small sample) are more exposed to one or two unlucky/lucky moments than keepers like B. Heras or D. Cabezas, who've faced double-digit big chances.
+- **J. Cárdenas (5 matches, 511 minutes, 73 shots faced) is the thinnest sample in the ranked pool** — he only just clears the 450-minute threshold, and his last-place ranking (27.1) should be read with that in mind. Compare `visuals/sample_size_confidence.png` for how his shots-faced total stacks up against the rest of the pool.
+- **R. Rodríguez's weakest submodel is Penalty Saves (8th percentile)** off a small number of penalties faced this season — `visuals/bayesian_shrinkage.png` shows how much the shrinkage pulls a score like this toward the league mean, but with only a handful of attempts the submodel still carries limited information about him specifically.
+- Several keepers' Big-Chance Denial and Ball Security scores are decided by single-digit shot counts — `visuals/big_chance_waffle_grid.png` makes this concrete: B. Heras's perfect-looking "3/3 big chances saved" record (implied by his overall profile) is a much smaller sample than G. Napa's "11/17."
 
 ## How to use this
 
-Start from `goalkeeper_value_rankings.png` for the headline order, cross-check any name you're relying on against `sample_size_confidence.png` for how much data backs it, then use the per-player pizza chart in `player_visuals/` for the full 13-submodel profile before making a call. `composite_score_decomposition.png` is the fastest way to see *why* two similarly-ranked keepers (like Angulo and Cabezas) got there through different routes.
+Start from `goalkeeper_value_rankings.png` for the headline order, cross-check any name you're relying on against `sample_size_confidence.png` for how much data backs it, then use the per-player pizza chart in `player_visuals/` for the full 13-submodel profile before making a call. `composite_score_decomposition.png` is the fastest way to see *why* two similarly-ranked keepers got there through different routes, and `shot_stopping_pitch_maps.png` / `rolling_form_momentum.png` (in the advanced visuals set) show *where* danger comes from and *when* in the season a keeper's form actually shifted, rather than just the season-long average.

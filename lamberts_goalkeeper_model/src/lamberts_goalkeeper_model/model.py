@@ -191,7 +191,17 @@ def _bayesian_rate(successes: pd.Series, attempts: pd.Series, prior_rate: float,
 
 
 def _build_season_table(match_df: pd.DataFrame) -> pd.DataFrame:
-    grp_cols = ["season", "team", "player_id", "player"]
+    # Group by team_id and player_id, never by the team/player NAME text
+    # columns: the aggregator's name resolution is occasionally wrong for a
+    # given match row (team mislabeled as the opponent; player name falls
+    # back to the raw player_id string when it wasn't captured for that
+    # match's lineup/substitution event), while the ids are stable.
+    # Grouping by name would silently fragment a keeper's season into bogus
+    # single-match sub-groups under the wrong label. team_id/player_id are
+    # reliable because every other join in this model (shots faced, crosses
+    # faced) already keys off them. Every player_id in this dataset maps to
+    # exactly one team_id (no mid-season transfers to worry about losing).
+    grp_cols = ["season", "team_id", "player_id"]
     agg = match_df.groupby(grp_cols, as_index=False).agg(
         matches=("match_file", "nunique"),
         minutes=("minutes", "sum"),
@@ -223,6 +233,14 @@ def _build_season_table(match_df: pd.DataFrame) -> pd.DataFrame:
         fouls=("fouls", "sum"),
         cards=("cards", "sum"),
     )
+
+    # Canonical display names: the majority-vote team/player name across
+    # that id's match rows (recovers a clean label even though individual
+    # rows can be mislabeled or fall back to the raw id string).
+    canonical_team = match_df.groupby("team_id")["team"].agg(lambda s: s.mode().iloc[0]).rename("team")
+    canonical_player = match_df.groupby("player_id")["player"].agg(lambda s: s.mode().iloc[0]).rename("player")
+    agg = agg.merge(canonical_team, on="team_id", how="left")
+    agg = agg.merge(canonical_player, on="player_id", how="left")
 
     # --- Submodel 1: Shot-Stopping (Goals Prevented Above Expected) ---
     agg["gpae_p90"] = _p90(agg["gpae"], agg["minutes"])
@@ -284,8 +302,8 @@ def _build_season_table(match_df: pd.DataFrame) -> pd.DataFrame:
     agg["discipline_cost_p90"] = agg["fouls_p90"] + agg["cards_p90"] * 3.0
 
     # --- Submodel 13: Availability / Durability ---
-    team_max_minutes = match_df.groupby("team")["match_file"].nunique() * 90.0
-    agg["team_possible_minutes"] = agg["team"].map(team_max_minutes)
+    team_max_minutes = match_df.groupby("team_id")["match_file"].nunique() * 90.0
+    agg["team_possible_minutes"] = agg["team_id"].map(team_max_minutes)
     agg["availability_pct"] = (agg["minutes"] / agg["team_possible_minutes"]).clip(upper=1.0).fillna(0.0)
 
     return agg

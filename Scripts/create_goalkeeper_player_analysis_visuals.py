@@ -159,7 +159,7 @@ def save_strength_weakness_board(season: pd.DataFrame, out_path: pathlib.Path) -
     ax.axhline(n * row_h + 0.05, color=GRID_COLOR, lw=1.2)
     fig.suptitle("Every Ranked Keeper's Best and Worst Submodel", color=TEXT_MAIN, fontsize=17, fontweight="bold", y=1.0)
     fig.text(0.5, 0.965, "Green = highest-scoring submodel (0-100 percentile) for that keeper; red = lowest-scoring", ha="center", color=TEXT_SUB, fontsize=10)
-    fig.text(0.01, 0.01, "Lamberts Goalkeeper Model | n=15 ranked keepers", fontsize=8, color=TEXT_SUB)
+    fig.text(0.01, 0.01, f"Lamberts Goalkeeper Model | n={n} ranked keepers", fontsize=8, color=TEXT_SUB)
     add_logo(fig)
     fig.savefig(out_path, dpi=200, facecolor=fig.get_facecolor(), bbox_inches="tight")
     plt.close(fig)
@@ -168,7 +168,9 @@ def save_strength_weakness_board(season: pd.DataFrame, out_path: pathlib.Path) -
 # --- 2. Distribution volume vs quality (the Napa chart) -----------------------
 
 def save_distribution_volume_vs_quality(season: pd.DataFrame, out_path: pathlib.Path) -> None:
-    fig, ax = plt.subplots(figsize=(11, 9), facecolor=BG)
+    from adjustText import adjust_text
+
+    fig, ax = plt.subplots(figsize=(12, 10), facecolor=BG)
     style_axes(ax)
 
     x = season["distribution_involvement_score"]
@@ -176,18 +178,32 @@ def save_distribution_volume_vs_quality(season: pd.DataFrame, out_path: pathlib.
     ax.axvline(50, color=GRID_COLOR, lw=1.2, ls="--", alpha=0.7)
     ax.axhline(50, color=GRID_COLOR, lw=1.2, ls="--", alpha=0.7)
 
-    is_napa = season["player"] == "G. Napa"
-    colors = np.where(is_napa, C_AMBER, C_INDIGO)
-    sizes = np.where(is_napa, 260, 110)
-    ax.scatter(x, y, s=sizes, c=colors, alpha=0.9, edgecolors=BG, linewidths=1.2, zorder=3)
-    for _, r in season.iterrows():
-        fw = "bold" if r["player"] == "G. Napa" else "normal"
-        ax.annotate(r["player"], (r["distribution_involvement_score"], r["distribution_accuracy_score"]),
-                    xytext=(7, 5), textcoords="offset points", fontsize=9, color=TEXT_MAIN, fontweight=fw)
+    # Data-driven outlier: highest involvement paired with lowest accuracy,
+    # among keepers who are at least above-median on involvement (so we
+    # don't flag a low-volume keeper who also happens to have poor accuracy).
+    above_median_volume = season[season["distribution_involvement_score"] >= season["distribution_involvement_score"].median()]
+    outlier_player = above_median_volume.loc[above_median_volume["distribution_accuracy_score"].idxmin(), "player"]
+    outlier_row = season[season["player"] == outlier_player].iloc[0]
+    outlier_raw = outlier_row["pass_value_over_expected_p90"]
+    worst_raw = season["pass_value_over_expected_p90"].min()
+    is_dataset_worst = np.isclose(outlier_raw, worst_raw)
 
-    ax.annotate("Most involved passer in the league,\nworst pass value over expected\n(-6.17, the single worst number\nin the whole dataset)",
-                xy=(float(season.loc[is_napa, "distribution_involvement_score"].iloc[0]), float(season.loc[is_napa, "distribution_accuracy_score"].iloc[0])),
-                xycoords="data", xytext=(0.32, 0.30), textcoords="axes fraction",
+    is_outlier = season["player"] == outlier_player
+    colors = np.where(is_outlier, C_AMBER, C_INDIGO)
+    sizes = np.where(is_outlier, 260, 110)
+    ax.scatter(x, y, s=sizes, c=colors, alpha=0.9, edgecolors=BG, linewidths=1.2, zorder=3)
+
+    texts = []
+    for _, r in season.iterrows():
+        fw = "bold" if r["player"] == outlier_player else "normal"
+        texts.append(ax.text(r["distribution_involvement_score"], r["distribution_accuracy_score"], r["player"],
+                              fontsize=9, color=TEXT_MAIN, fontweight=fw, zorder=4))
+    adjust_text(texts, ax=ax, arrowprops=dict(arrowstyle="-", color=TEXT_SUB, lw=0.6, alpha=0.6))
+
+    worst_note = "the single worst number in the whole dataset" if is_dataset_worst else "one of the weakest in the pool"
+    ax.annotate(f"Most involved passer among high-volume keepers,\nweakest pass value over expected\n({outlier_raw:+.2f}, {worst_note})",
+                xy=(float(outlier_row["distribution_involvement_score"]), float(outlier_row["distribution_accuracy_score"])),
+                xycoords="data", xytext=(0.30, 0.32), textcoords="axes fraction",
                 fontsize=9.3, color=C_AMBER, fontweight="bold", ha="left",
                 arrowprops=dict(arrowstyle="->", color=C_AMBER, lw=1.3))
 
@@ -210,25 +226,44 @@ def save_distribution_volume_vs_quality(season: pd.DataFrame, out_path: pathlib.
 # --- 3. Shot-stopping vs everything else (the "busy but leaky" chart) ---------
 
 def save_shot_stopping_vs_secondary(season: pd.DataFrame, out_path: pathlib.Path) -> None:
+    from adjustText import adjust_text
+
     shot_cols = [f"{s}_score" for s, c in SUBMODEL_CATEGORY.items() if c == "shot_stopping"]
     other_cols = [f"{s}_score" for s, c in SUBMODEL_CATEGORY.items() if c != "shot_stopping"]
     df = season.copy()
     df["shot_stopping_avg"] = df[shot_cols].mean(axis=1)
     df["secondary_skills_avg"] = df[other_cols].mean(axis=1)
 
-    fig, ax = plt.subplots(figsize=(11, 9), facecolor=BG)
+    # Data-driven highlight selection instead of hardcoded names, so this
+    # stays correct if the underlying data changes: "busy but leaky" =
+    # weakest shot-stopping among keepers who are still above-average
+    # elsewhere; "elite all-round" = best of both simultaneously (highest
+    # min of the two axes, among keepers above 50 on both).
+    both_strong = df[(df["shot_stopping_avg"] >= 50) & (df["secondary_skills_avg"] >= 50)]
+    elite_allround = both_strong.loc[
+        both_strong[["shot_stopping_avg", "secondary_skills_avg"]].min(axis=1).idxmax(), "player"
+    ] if not both_strong.empty else None
+    leaky_candidates = df[(df["shot_stopping_avg"] < 50) & (df["secondary_skills_avg"] >= 50)]
+    busy_but_leaky = leaky_candidates.nsmallest(2, "shot_stopping_avg")["player"].tolist()
+
+    fig, ax = plt.subplots(figsize=(12, 10), facecolor=BG)
     style_axes(ax)
     ax.axvline(50, color=GRID_COLOR, lw=1.2, ls="--", alpha=0.7)
     ax.axhline(50, color=GRID_COLOR, lw=1.2, ls="--", alpha=0.7)
 
-    highlight = df["player"].isin(["A. Quintana", "H. Piedra", "B. Heras"])
-    colors = np.where(df["player"] == "B. Heras", GREEN, np.where(highlight, C_AMBER, C_NAVY))
-    sizes = np.where(highlight, 220, 100)
+    highlight_names = set(busy_but_leaky) | ({elite_allround} if elite_allround else set())
+    is_leaky = df["player"].isin(busy_but_leaky)
+    is_elite = df["player"] == elite_allround
+    colors = np.where(is_elite, GREEN, np.where(is_leaky, C_AMBER, C_NAVY))
+    sizes = np.where(is_leaky | is_elite, 220, 100)
     ax.scatter(df["shot_stopping_avg"], df["secondary_skills_avg"], s=sizes, c=colors, alpha=0.9, edgecolors=BG, linewidths=1.2, zorder=3)
+
+    texts = []
     for _, r in df.iterrows():
-        fw = "bold" if r["player"] in ("A. Quintana", "H. Piedra", "B. Heras") else "normal"
-        ax.annotate(r["player"], (r["shot_stopping_avg"], r["secondary_skills_avg"]), xytext=(7, 5),
-                    textcoords="offset points", fontsize=9, color=TEXT_MAIN, fontweight=fw)
+        fw = "bold" if r["player"] in highlight_names else "normal"
+        texts.append(ax.text(r["shot_stopping_avg"], r["secondary_skills_avg"], r["player"],
+                              fontsize=9, color=TEXT_MAIN, fontweight=fw, zorder=4))
+    adjust_text(texts, ax=ax, arrowprops=dict(arrowstyle="-", color=TEXT_SUB, lw=0.6, alpha=0.6))
 
     ax.text(0.02, 0.02, "weak shot-stopping\nweak elsewhere", transform=ax.transAxes, ha="left", va="bottom", fontsize=9, color=TEXT_SUB)
     ax.text(0.02, 0.98, "weak shot-stopping\nstrong elsewhere\n(\"busy but leaky\")", transform=ax.transAxes, ha="left", va="top", fontsize=9, color=C_AMBER)
@@ -240,7 +275,8 @@ def save_shot_stopping_vs_secondary(season: pd.DataFrame, out_path: pathlib.Path
     ax.set_xlabel("Average shot-stopping submodel score (5 submodels)", color=TEXT_SUB, fontsize=10.5)
     ax.set_ylabel("Average of the other 8 submodel scores", color=TEXT_SUB, fontsize=10.5)
     fig.suptitle('Shot-Stopping vs. Everything Else', color=TEXT_MAIN, fontsize=16, fontweight="bold", y=1.04)
-    fig.text(0.5, 0.985, "A. Quintana and H. Piedra both have a real standout secondary skill that gets outweighed by the model's largest single weight: shot-stopping",
+    leaky_txt = " and ".join(busy_but_leaky) if busy_but_leaky else "No keeper this season"
+    fig.text(0.5, 0.985, f"{leaky_txt} {'both have' if len(busy_but_leaky) > 1 else 'has'} a real standout secondary skill outweighed by the model's largest single weight: shot-stopping",
               ha="center", color=TEXT_SUB, fontsize=9.7)
 
     fig.text(0.01, 0.01, "Lamberts Goalkeeper Model | Both axes are simple (unweighted) averages of percentile scores within the category.", fontsize=8, color=TEXT_SUB)
@@ -265,8 +301,17 @@ def save_specialists_board(season: pd.DataFrame, out_path: pathlib.Path) -> None
     ax.set_ylim(0, len(board))
     ax.axis("off")
 
+    top_count = win_counts.max()
+    top_leaders = win_counts[win_counts == top_count].index.tolist()
+    multi_leaders = win_counts[win_counts > 1]
+    if top_count <= 1:
+        leader_txt = "Every submodel is led by a different keeper -- no repeat specialists this season"
+    elif len(top_leaders) == 1:
+        leader_txt = f"{top_leaders[0]} leads the most submodels ({top_count}); {len(multi_leaders) - 1} other keeper(s) lead 2 apiece" if len(multi_leaders) > 1 else f"{top_leaders[0]} is the only keeper to lead more than one submodel ({top_count})"
+    else:
+        leader_txt = f"{', '.join(top_leaders)} tie for the most submodels led ({top_count} each)"
     fig.suptitle("Submodel Specialists — Who Leads Each Category?", color=TEXT_MAIN, fontsize=17, fontweight="bold", y=1.0)
-    fig.text(0.5, 0.955, "B. Heras leads 3 of the 13 submodels -- no one else leads more than once", ha="center", color=TEXT_SUB, fontsize=10)
+    fig.text(0.5, 0.955, leader_txt, ha="center", color=TEXT_SUB, fontsize=10)
 
     for i, r in board.iterrows():
         y = len(board) - 1 - i + 0.5
