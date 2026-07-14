@@ -1,0 +1,14 @@
+submodel,name,formula,composite_weight
+shot_stopping_gpae,Shot-Stopping (Goals Prevented),"Σ PSxG (on-target shots faced) − goals conceded, per 90.",0.16
+save_difficulty_weighted,Save Difficulty-Weighted Stopping,"Σ xGOT of shots actually saved (harder saves count for more), per 90.",0.12
+big_chance_denial,Big-Chance / High-Danger Denial,Bayesian-shrunk save rate on faced shots with xG ≥ 0.30.,0.1
+shot_stopping_reliability,Shot-Stopping Reliability,"Inverse of match-to-match std dev of GPAE per 90 (consistency, not just magnitude).",0.08
+claiming_command,Claiming & Command of the Box,Bayesian-shrunk (claims+punches+smothers) rate per cross faced into the box.,0.09
+sweeper_activity,Sweeper Activity,(keeper sweeper actions + keeper pickups) per 90.,0.07
+distribution_involvement,Distribution Involvement,Total passes attempted per 90 (build-up outlet volume).,0.05
+distribution_accuracy,Distribution Accuracy,Pass value over expected (xPass-model-based) per 90.,0.08
+progressive_distribution,Progressive Distribution Value,"xT generated from the keeper's own passing, per 90.",0.07
+error_risk,Error / Risk Cost,"2×(typeId-51 error events per 90) + (turnovers on own passes per 90), inverted.",0.08
+penalty_save_ability,Penalty Save Ability,Bayesian-shrunk penalty save rate (prior weight 8 penalties).,0.04
+discipline_risk,Discipline Risk,"Fouls per 90 + 3×cards per 90, inverted (availability risk).",0.03
+availability,Availability / Durability,Minutes played ÷ team's total possible minutes this season.,0.03
