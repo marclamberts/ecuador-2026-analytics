@@ -4,6 +4,17 @@ A composite value model for Ecuador 2026 goalkeepers built from 13 submodels
 covering shot-stopping, claiming/sweeping, distribution, risk, and
 availability. Built by `Scripts/build_goalkeeper_value_model.py`.
 
+> **Data correction:** season aggregation used to group by the team/player
+> *name* text columns from the source data, which are occasionally wrong for
+> a given match row (mislabeled team, or the player name falling back to a
+> raw id string). That silently fragmented most keepers' seasons into bogus
+> single-match sub-groups under the wrong label — affected 21 of 29 keeper
+> identities (~95% of match rows). Fixed in
+> `lamberts_goalkeeper_model/model.py` to group by `team_id`/`player_id`
+> instead (reliable; already used by every other join in the model), with
+> the display name/team derived by majority vote. The ranked pool grew from
+> 15 to 18 keepers as a result. All numbers in this repo reflect the fix.
+
 ## Visuals
 
 Built by `Scripts/create_goalkeeper_value_visuals.py` (requires
@@ -69,7 +80,7 @@ Built by `Scripts/create_goalkeeper_model_explainer_visuals.py`:
   metric; spread-out dots mean real separation exists in the data.
 - `visuals/minutes_threshold_sensitivity.png`: how many keepers would
   qualify for ranking at every minutes cutoff from 0 to 1200, justifying
-  why 450 minutes (~5 matches) was chosen — low enough to keep 15
+  why 450 minutes (~5 matches) was chosen — low enough to keep 18
   keepers, high enough to filter out single-match cameos.
 - `visuals/sample_size_confidence.png`: Goalkeeper Value Index plotted
   against shots faced (the sample size behind every shot-stopping
@@ -96,6 +107,63 @@ specific findings:
 - `visuals/submodel_specialists_board.png`: who leads each of the 13
   submodels, with keepers who lead more than one starred.
 
+### Advanced visuals
+
+Built by `Scripts/create_goalkeeper_advanced_visuals.py` (shares data
+loaders with the scripts below via `Scripts/_gk_shared.py`) — these use
+dimensions of the data (shot location, match date, outcome flow) that the
+charts above don't touch.
+
+- `visuals/shot_stopping_pitch_maps.png`: real shot locations faced by the
+  top 6 keepers (by composite index), plotted on a pitch (mplsoccer),
+  colored saved/goal/off-target and sized by PSxG.
+- `visuals/rolling_form_momentum.png`: rolling 4-match GPAE per 90 across
+  the season for the top 6 keepers — shows hot/cold stretches the
+  season-long average hides.
+- `visuals/shot_outcome_funnel.png`: league-wide shot funnel (shots faced
+  → on/off target → saved/goal), hand-built with trapezoid connectors
+  rather than `matplotlib.sankey` (which can't color sub-segments of one
+  flow independently).
+- `visuals/rank_bump_chart.png`: cumulative-to-date shot-stopping rank
+  (GPAE per 90 only, not the full composite — monthly samples are too
+  thin for that) plotted by month for every ranked keeper.
+- `visuals/big_chance_waffle_grid.png`: one icon per big chance faced
+  (xG ≥ 0.30), colored saved/goal — makes the small-sample caveat on that
+  submodel concrete instead of abstract.
+
+### Regression & Monte Carlo
+
+Built by `Scripts/create_goalkeeper_regression_montecarlo.py` — a
+statistical layer asking two questions the composite index can't answer
+on its own: *is a keeper's trend real or noise*, and *how much of their
+rating is skill vs. the shots they happened to face*.
+
+- `goalkeeper_trend_regression.csv` / `visuals/regression_trend_leaderboard.png`
+  / `visuals/regression_trend_detail.png`: linear regression of
+  match-level GPAE per 90 against matchday index (`scipy.stats.linregress`)
+  for every keeper with ≥5 matches. The leaderboard colors each keeper's
+  slope by statistical significance (p < 0.10); the detail chart shows
+  scatter + fit line + 95% confidence band for every keeper who clears
+  that bar. Read honestly: most keepers' trends are **not** statistically
+  distinguishable from a flat line at this sample size — that's a real
+  finding, not a chart failure.
+- `goalkeeper_montecarlo_shot_luck.csv` / `visuals/montecarlo_shot_luck.png`:
+  Monte Carlo simulation (10,000 draws per keeper) treating every
+  on-target shot faced as an independent coin flip at its own PSxG,
+  producing a simulated distribution of goals conceded purely from shot
+  quality and chance. Actual goals conceded is compared against that
+  distribution (a z-score and percentile) to separate "genuinely
+  outperforming the shots faced" from "within normal variance" from
+  "underperforming" — a more rigorous cousin of `shot_stopping_gpae`.
+- `goalkeeper_montecarlo_ranking.csv` / `visuals/montecarlo_rank_stability.png`:
+  bootstrap simulation (1,000 draws) — each keeper's own matches
+  resampled with replacement, the full 13-submodel model rescored from
+  scratch each draw, and the resulting rank recorded. Produces a median
+  rank and 90% confidence interval per keeper, i.e. how much the
+  headline ranking would move around if the season had gone only
+  slightly differently. Wide bands = rank hinges on a few matches; narrow
+  bands = robust.
+
 ## Core files
 
 - `goalkeeper_match_value.csv`: one row per keeper-match with raw counts
@@ -113,6 +181,13 @@ specific findings:
   still in the match-level file).
 - `submodel_definitions.csv`: the 13 submodels, their formulas, and their
   weight in the composite index.
+- `goalkeeper_trend_regression.csv`: per-keeper linear regression of
+  match-level GPAE per 90 vs. matchday (slope, R², p-value, significance).
+- `goalkeeper_montecarlo_shot_luck.csv`: per-keeper Monte Carlo shot-luck
+  simulation output (simulated goals-conceded distribution, actual vs.
+  simulated, z-score).
+- `goalkeeper_montecarlo_ranking.csv`: per-keeper bootstrap rank
+  distribution (median rank, 90% CI, P(finish 1st), P(finish top 3)).
 
 ## Data sources
 

@@ -1,0 +1,19 @@
+player,actual_rank,median_rank,rank_p05,rank_p95,prob_rank1,prob_top3,n_draws,team
+A. Quintana,15,15.0,10.0,17.0,0.0,0.0,1000,CSD Independiente del Valle
+B. Heras,6,5.0,2.0,11.0,0.032,0.246,1000,Delfín SC
+D. Cabezas,10,9.0,4.0,14.0,0.004,0.042,1000,Libertad Fútbol Club
+F. Ferrero,2,3.0,1.0,10.0,0.323,0.58,1000,CD Cuenca
+F. Zambrano,16,16.0,11.0,18.0,0.0,0.0,1000,Manta FC
+G. Napa,4,5.0,1.0,10.0,0.054,0.308,1000,Guayaquil City FC
+G. Valle,7,7.0,3.0,13.0,0.007,0.103,1000,Liga Deportiva Universitaria de Quito
+H. Piedra,17,17.0,13.950000000000003,18.0,0.0,0.0,1000,SD Aucas
+J. Angulo,1,2.0,1.0,6.0,0.351,0.76,1000,Leones FC
+J. Contreras,5,6.0,1.0,12.0,0.056,0.235,1000,Barcelona SC
+J. Cárdenas,18,18.0,13.0,18.0,0.0,0.0,1000,Delfín SC
+L. Nazareno,3,4.0,1.0,11.0,0.128,0.488,1000,Leones FC
+P. Ortíz,8,8.0,2.0,14.0,0.033,0.147,1000,CS Emelec
+R. Formento,11,11.0,3.0,15.0,0.009,0.054,1000,Mushuc Runa SC
+R. Rodríguez,13,11.0,5.0,16.0,0.003,0.024,1000,CSD Macará
+R. Romo,9,10.0,6.0,13.0,0.0,0.006,1000,CD Universidad Católica del Ecuador
+R. Silva,12,12.0,6.0,16.0,0.0,0.007,1000,Orense SC
+S. Razzeto,14,14.0,9.0,17.0,0.0,0.0,1000,CD Técnico Universitario

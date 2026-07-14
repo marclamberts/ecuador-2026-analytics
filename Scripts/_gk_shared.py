@@ -76,7 +76,20 @@ def load_season() -> pd.DataFrame:
 
 
 def load_match() -> pd.DataFrame:
-    return pd.read_csv(MODEL_DIR / "goalkeeper_match_value.csv")
+    """goalkeeper_match_value.csv with player/team display names
+    canonicalized per id (majority vote), same fix as the package's
+    season aggregation. The raw per-row name/team text is occasionally
+    wrong for a given match (mislabeled team, or player name falling
+    back to the raw id string) -- any code that filters or groups this
+    table by the raw "player"/"team" columns instead of the ids would
+    silently drop those rows. Canonicalizing here means every script
+    that goes through this loader is safe by default."""
+    df = pd.read_csv(MODEL_DIR / "goalkeeper_match_value.csv")
+    canonical_player = df.groupby("player_id")["player"].agg(lambda s: s.mode().iloc[0])
+    canonical_team = df.groupby("team_id")["team"].agg(lambda s: s.mode().iloc[0])
+    df["player"] = df["player_id"].map(canonical_player)
+    df["team"] = df["team_id"].map(canonical_team)
+    return df
 
 
 def load_raw_shots() -> pd.DataFrame:

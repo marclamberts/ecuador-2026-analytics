@@ -292,7 +292,12 @@ def save_score_distributions(season: pd.DataFrame, out_path: pathlib.Path) -> No
 # --- 3. Minutes threshold sensitivity ------------------------------------------
 
 def save_threshold_sensitivity(match_df: pd.DataFrame, out_path: pathlib.Path) -> None:
-    season_minutes = match_df.groupby(["season", "team", "player_id", "player"], as_index=False)["minutes"].sum()
+    # Group by team_id/player_id only, not the team/player NAME text --
+    # those are occasionally wrong for a given match row (mislabeled team,
+    # or player name falling back to a raw id string), which would
+    # silently fragment a keeper's minutes across bogus sub-groups. Same
+    # fix as the season-aggregation step in the core model.
+    season_minutes = match_df.groupby(["season", "team_id", "player_id"], as_index=False)["minutes"].sum()
     thresholds = np.arange(0, 1250, 50)
     counts = [(season_minutes["minutes"] >= t).sum() for t in thresholds]
 
