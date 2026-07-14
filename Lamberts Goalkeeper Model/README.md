@@ -1,8 +1,26 @@
-# Goalkeeper Value Model
+# Lamberts Goalkeeper Model
 
 A composite value model for Ecuador 2026 goalkeepers built from 13 submodels
 covering shot-stopping, claiming/sweeping, distribution, risk, and
 availability. Built by `Scripts/build_goalkeeper_value_model.py`.
+
+## Visuals
+
+Built by `Scripts/create_goalkeeper_value_visuals.py` (requires
+`goalkeeper_season_value_model.csv` and `submodel_definitions.csv` to
+already exist — run the build script first).
+
+- `visuals/goalkeeper_value_rankings.png`: league-wide ranking of all
+  ranked keepers on both the percentile-based `goalkeeper_value_index`
+  and the z-score-based `goalkeeper_value_index_zscore`, colored above
+  vs. below the pool mean.
+- `visuals/submodel_weights.png`: the 13 submodel weights, color-coded
+  by category (Shot-Stopping / Claiming & Sweeping / Distribution /
+  Risk & Availability).
+- `player_visuals/{player}_pizza.png`: one pizza chart per ranked
+  keeper, one slice per submodel (percentile score, colored by
+  category), with the raw metric value labeled on each slice and the
+  composite index/percentile in the header.
 
 ## Core files
 

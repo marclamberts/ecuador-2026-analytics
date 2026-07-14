@@ -1,5 +1,5 @@
 """
-Goalkeeper Value Model: 13 submodels covering shot-stopping, claiming,
+Lamberts Goalkeeper Model: 13 submodels covering shot-stopping, claiming,
 sweeping, distribution, risk, and availability, rolled into a single
 composite Goalkeeper Value Index.
 
@@ -35,7 +35,7 @@ ROOT = HERE.parent
 AGG_DIR = ROOT / "Aggregated"
 DANGER_DIR = ROOT / "Danger"
 EVENT_DIR = ROOT / "Event"
-OUT_DIR = ROOT / "Goalkeeper Value Model"
+OUT_DIR = ROOT / "Lamberts Goalkeeper Model"
 
 MIN_MINUTES_FOR_RANKING = 450.0  # ~5 full matches
 BIG_CHANCE_XG = 0.30
