@@ -77,6 +77,25 @@ Built by `Scripts/create_goalkeeper_model_explainer_visuals.py`:
   after Bayesian shrinkage — worth checking before treating small
   rank differences as meaningful.
 
+### Player analysis visuals
+
+`player_analysis.md` is the written analysis; these charts (built by
+`Scripts/create_goalkeeper_player_analysis_visuals.py`) illustrate its
+specific findings:
+
+- `visuals/player_strength_weakness_board.png`: every ranked keeper's
+  single best- and worst-scoring submodel, side by side — the fastest
+  way to see each keeper's real profile rather than just their index.
+- `visuals/distribution_volume_vs_quality.png`: distribution involvement
+  vs. distribution accuracy, highlighting G. Napa as the pool's clearest
+  outlier — most involved passer, worst pass value over expected.
+- `visuals/shot_stopping_vs_secondary_skills.png`: average shot-stopping
+  score vs. the average of every other submodel, isolating the "busy but
+  leaky" quadrant (A. Quintana, H. Piedra) from the elite all-round
+  quadrant (B. Heras).
+- `visuals/submodel_specialists_board.png`: who leads each of the 13
+  submodels, with keepers who lead more than one starred.
+
 ## Core files
 
 - `goalkeeper_match_value.csv`: one row per keeper-match with raw counts

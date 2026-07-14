@@ -7,26 +7,26 @@ Ecuador 2026 season. 15 goalkeepers qualify for ranking (≥450 minutes played);
 | # | Player | Team | Index | Pctile | Min / Mtc | Standout strength | Standout weakness |
 |---|---|---|---|---|---|---|---|
 | 1 | J. Angulo | Leones FC | 69.5 | 100 | 528 / 5 | Shot-stopping (100) & progressive distribution (100) | Discipline (7) — 3 cards in 5 matches |
-| 1 | D. Cabezas | Libertad FC | 69.5 | 93 | 809 / 8 | Save-difficulty-weighted stopping (100) | Distribution accuracy is mid-pack, not a weakness but not a strength either |
-| 3 | B. Heras | Delfín SC | 68.2 | 87 | 720 / 7 | Big-chance denial, reliability, sweeper activity — three 100s | Distribution accuracy is low (0.95 value over expected vs. field-best ~8.4) |
+| 1 | D. Cabezas | Libertad FC | 69.5 | 93 | 809 / 8 | Save-difficulty-weighted stopping (100) | Reliability, ball security & discipline — three-way tie at 33 |
+| 3 | B. Heras | Delfín SC | 68.2 | 87 | 720 / 7 | Big-chance denial, reliability, sweeper activity — three 100s | Ball security & discipline (20 each) — 1 error, 2 cards in 720 minutes |
 | 4 | R. Rodríguez | CSD Macará | 61.5 | 80 | 704 / 7 | Balanced across categories, no extreme weakness | Penalty save ability (10) — 0 saves on 2 penalties faced |
 | 5 | G. Napa | Guayaquil City FC | 60.9 | 73 | 1141 / 11 | Availability (100) — ever-present, highest distribution volume (424 passes) | Distribution accuracy (7) — worst in the pool at −6.17 pass value over expected |
-| 6 | R. Formento | Mushuc Runa SC | 58.7 | 67 | 1031 / 10 | Distribution accuracy (100), highest xT from passing (20.6) | Shot-stopping — negative GPAE (−1.36), concedes more than PSxG predicts |
+| 6 | R. Formento | Mushuc Runa SC | 58.7 | 67 | 1031 / 10 | Distribution accuracy (100), highest xT from passing (20.6) | Reliability, claiming/command, penalty saves & discipline — four-way tie at 27 |
 | 7 | F. Ferrero | CD Cuenca | 56.4 | 60 | 719 / 7 | Solid shot-stopping volume | Reliability (7) — most match-to-match GPAE volatility in the pool |
 | 8 | R. Romo | CD Universidad Católica | 49.9 | 53 | 697 / 7 | Discipline (100) — zero cards, zero fouls | Big-chance denial (10) — worst in the pool |
 | 9 | S. Razzeto | CD Técnico Universitario | 48.8 | 47 | 923 / 9 | Even, unremarkable across categories | Distribution involvement (7) — fewest passes relative to minutes |
-| 10 | R. Silva | Orense SC | 48.5 | 40 | 840 / 8 | — | Shot-stopping is negative (GPAE −2.40) |
+| 10 | R. Silva | Orense SC | 48.5 | 40 | 840 / 8 | Ball security & discipline (93 each) | Reliability (13) — most volatile shot-stopping match to match |
 | 11 | G. Valle | LDU Quito | 48.3 | 33 | 522 / 5 | — | Availability (7) — thinnest sample in the ranked pool; progressive distribution (7) |
 | 12 | J. Contreras | Barcelona SC | 43.1 | 27 | 715 / 7 | — | Claiming/command (7) — worst in the pool, 0 claims all season |
-| 13 | F. Zambrano | Manta FC | 40.4 | 20 | 607 / 6 | — | Shot-stopping negative (−2.98), thin sweeper activity (0 sweeper actions) |
+| 13 | F. Zambrano | Manta FC | 40.4 | 20 | 607 / 6 | Penalty saves (97) | Shot-stopping (GPAE −2.98) & distribution involvement — tied at 13 |
 | 14 | A. Quintana | CSD Independiente del Valle | 39.1 | 13 | 917 / 9 | Claiming/command (100) — busiest, most commanding on crosses | Shot-stopping (7) — worst GPAE in the pool at −4.89 |
-| 15 | H. Piedra | SD Aucas | 37.5 | 7 | 1124 / 11 | Ball security (100) — zero tagged errors, lowest turnover rate per 90 in the pool | Shot-stopping (near-worst, −4.27) and sweeper activity (7) despite most minutes played |
+| 15 | H. Piedra | SD Aucas | 37.5 | 7 | 1124 / 11 | Ball security (100) — zero tagged errors, lowest turnover rate per 90 in the pool | Save-difficulty-weighted stopping & sweeper activity — tied at 7, despite most minutes played |
 
 ## Reading the top of the table
 
 **J. Angulo and D. Cabezas are statistically tied (69.5 each)** but are different players. Angulo's index rests on 5 matches — his shot-stopping and progressive-distribution scores are both perfect 100s, but `sample_size_confidence.png` flags him as below-median shots faced (79 shots faced vs. a pool median of ~88), so some of that separation could compress with more matches. Cabezas has nearly double the sample (809 min / 8 matches, 155 shots faced — comfortably above median) and still lands in the same tier, which is the more trustworthy of the two ties. If you need to pick one for a single season-defining decision, Cabezas is the safer bet on data volume alone; Angulo is the higher-ceiling small-sample story.
 
-**B. Heras at #3 (68.2) is the most rounded elite profile in the pool** — three separate 100-scores (big-chance denial, reliability, sweeper activity), meaning he isn't just good on volume, he's *consistent* match to match and specifically excellent on the highest-danger shots he faces. His one real gap is distribution accuracy (0.95 pass value over expected, versus R. Formento's 8.43) — he's a shot-stopper and sweeper first, not a passing outlet.
+**B. Heras at #3 (68.2) is the most rounded elite profile in the pool** — three separate 100-scores (big-chance denial, reliability, sweeper activity), meaning he isn't just good on volume, he's *consistent* match to match and specifically excellent on the highest-danger shots he faces. His actual weak points are ball security and discipline (both score 20) — 1 tagged error plus a below-average distribution turnover rate, and 2 cards inside just 720 minutes. His distribution accuracy is unremarkable but not a weakness (53rd percentile) — he's a shot-stopper and sweeper first, and the discipline/security dip is the real price of that profile.
 
 ## The submodel specialists (best-in-pool per category)
 
@@ -46,7 +46,7 @@ Ecuador 2026 season. 15 goalkeepers qualify for ranking (≥450 minutes played);
 | Discipline | R. Romo | Zero cards, zero fouls all season |
 | Availability | G. Napa | Played closest to 100% of his team's possible minutes |
 
-B. Heras shows up as the category leader **three times** (big-chance denial, reliability, sweeper activity) — no one else leads more than once. That concentration is a real signal, not a fluke of the composite weighting: see `visuals/composite_score_decomposition.png`, where his shot-stopping segment is the largest single block behind J. Angulo's.
+B. Heras shows up as the category leader **three times** (big-chance denial, reliability, sweeper activity) — the most of anyone. J. Angulo (goals prevented, progressive value) and G. Napa (distribution volume, availability) each lead twice; everyone else leads at most once. See `visuals/submodel_specialists_board.png` for the full leaderboard, and `visuals/composite_score_decomposition.png` for how Heras's shot-stopping segment stacks up against the rest of the pool.
 
 ## Two profiles worth flagging specifically
 
