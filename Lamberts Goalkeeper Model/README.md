@@ -22,6 +22,38 @@ already exist — run the build script first).
   category), with the raw metric value labeled on each slice and the
   composite index/percentile in the header.
 
+### Methodology / diagnostic visuals
+
+Built by `Scripts/create_goalkeeper_model_diagnostics.py` — these explain
+*how the model works and whether its inputs are sound*, as opposed to the
+player-profile visuals above.
+
+- `visuals/shot_stopping_diagnostic.png`: PSxG faced vs. goals conceded
+  per keeper — what `shot_stopping_gpae` is actually measuring, and who's
+  over/underperforming the shot quality they faced.
+- `visuals/shot_model_calibration.png`: a reliability curve (mean
+  predicted PSxG vs. actual goal rate, in 8 quantile bins) for the
+  trained shot model every shot-stopping submodel depends on, plus its
+  PSxG distribution. Validates the model behind the model.
+- `visuals/submodel_correlation_heatmap.png`: pairwise Spearman
+  correlation across all 13 submodel scores — checks whether they
+  capture distinct goalkeeping skills or are redundant. (Notably,
+  `shot_stopping_gpae` and `sweeper_activity` correlate at 0.78, and
+  `error_risk` correlates negatively with several shot-stopping/command
+  submodels — worth knowing before trusting the composite as
+  "independent" dimensions.)
+- `visuals/bayesian_shrinkage.png`: raw vs. shrunk save rate for
+  `big_chance_denial` and `penalty_save_ability`, plotted against sample
+  size, showing how the shrinkage pulls small samples toward the league
+  mean.
+- `visuals/composite_score_decomposition.png`: each ranked keeper's
+  `goalkeeper_value_index`, stacked-bar decomposed into the 4 category
+  contributions (Shot-Stopping / Claiming & Sweeping / Distribution /
+  Risk & Availability) that built it.
+- `visuals/percentile_vs_zscore_agreement.png`: rank-by-percentile-index
+  vs. rank-by-zscore-index for every keeper — shows exactly which
+  keepers' ranking depends on which composite method you trust.
+
 ## Core files
 
 - `goalkeeper_match_value.csv`: one row per keeper-match with raw counts
