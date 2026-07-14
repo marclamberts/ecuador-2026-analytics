@@ -54,6 +54,29 @@ player-profile visuals above.
   vs. rank-by-zscore-index for every keeper — shows exactly which
   keepers' ranking depends on which composite method you trust.
 
+Built by `Scripts/create_goalkeeper_model_explainer_visuals.py`:
+
+- `visuals/model_architecture_overview.png`: a one-page infographic —
+  data sources → 13 submodels grouped into 4 weighted categories →
+  composite index — plus the sample size behind it. The fastest way to
+  explain the whole model to someone who hasn't read this README.
+- `visuals/submodel_score_distributions.png`: the *raw* metric behind
+  each submodel (not the percentile score — percentile ranks are
+  uniform by construction, so they can't show whether a submodel
+  actually separates keepers). Each row is one submodel, min-max scaled
+  to its own range purely for layout; actual min/max values are labeled
+  at each end. Clustered dots mean keepers are genuinely close on that
+  metric; spread-out dots mean real separation exists in the data.
+- `visuals/minutes_threshold_sensitivity.png`: how many keepers would
+  qualify for ranking at every minutes cutoff from 0 to 1200, justifying
+  why 450 minutes (~5 matches) was chosen — low enough to keep 15
+  keepers, high enough to filter out single-match cameos.
+- `visuals/sample_size_confidence.png`: Goalkeeper Value Index plotted
+  against shots faced (the sample size behind every shot-stopping
+  submodel). Keepers on the left have noisier shot-stopping scores even
+  after Bayesian shrinkage — worth checking before treating small
+  rank differences as meaningful.
+
 ## Core files
 
 - `goalkeeper_match_value.csv`: one row per keeper-match with raw counts
