@@ -10,9 +10,12 @@ availability. Built by `Scripts/build_goalkeeper_value_model.py`.
   (shots faced, PSxG faced, goals conceded, claims, sweeper actions,
   distribution, errors, etc.).
 - `goalkeeper_season_value_model.csv`: one row per keeper-season with all
-  13 submodel scores (0-100 percentile), the composite
-  `goalkeeper_value_index`, and its percentile
-  `goalkeeper_value_index_pctile`. Ranking is restricted to keepers with
+  13 submodel scores in two parallel forms — a 0-100 percentile
+  (`{submodel}_score`) and a standardized z-score (`{submodel}_zscore`)
+  — plus two composite indexes built the same way from each: the
+  percentile-based `goalkeeper_value_index` (with its own percentile,
+  `goalkeeper_value_index_pctile`) and the z-score-based
+  `goalkeeper_value_index_zscore`. Ranking is restricted to keepers with
   >= 450 minutes (~5 full matches) to avoid small-sample noise; keepers
   below that threshold are dropped from this file (their raw stats are
   still in the match-level file).
@@ -52,12 +55,33 @@ match-level joins rather than minute-window attribution.
 | `discipline_risk` | Availability risk from cards/fouls (inverted) | fouls per 90 + 3×cards per 90 |
 | `availability` | Durability as the starter | minutes played ÷ team's total possible minutes |
 
-Each submodel is converted to a 0-100 percentile among ranked keepers
-(higher is always better after inversion where noted), then blended into
-`goalkeeper_value_index` using the weights in `submodel_definitions.csv`
-(shot-stopping submodels carry the largest combined weight, since that's
-the core of the position; discipline and availability are minor
-modifiers).
+Each submodel's raw metric is converted two ways among ranked keepers
+(higher is always better after inversion where noted):
+
+- **Percentile** (`{submodel}_score`, 0-100): where a keeper ranks
+  relative to the pool. Robust to outliers, but compresses gaps between
+  closely-bunched keepers and expands gaps between keepers who happen to
+  sit at sparsely-populated points in the distribution.
+- **Z-score** (`{submodel}_zscore`, standardized: `(x - mean) / population std`,
+  sign-flipped for inverted metrics): how many standard deviations from
+  the pool average a keeper is on that specific metric. Preserves actual
+  magnitude of separation, so one keeper being *far* ahead on a submodel
+  shows up as a large z-score even if it's still just "1st of 15" in
+  percentile terms — but it's more sensitive to outliers than the
+  percentile version, and a submodel with a near-constant metric across
+  all keepers is defined to have all z-scores of 0 rather than dividing
+  by a near-zero standard deviation.
+
+Both are blended into a composite index using the weights in
+`submodel_definitions.csv` (shot-stopping submodels carry the largest
+combined weight, since that's the core of the position; discipline and
+availability are minor modifiers): `goalkeeper_value_index` from the
+percentile scores, and `goalkeeper_value_index_zscore` from the
+z-scores. The two composites usually agree on the top/bottom of the
+ranking but can disagree on ordering in the middle of the pack — that
+disagreement itself is informative (a keeper who's "solidly above
+average" everywhere vs. one who's "1st place by a hair" on a couple of
+submodels can land differently on each scale).
 
 ## Caveats
 

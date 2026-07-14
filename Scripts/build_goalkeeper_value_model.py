@@ -71,6 +71,20 @@ def pctile(series: pd.Series, invert: bool = False) -> pd.Series:
     return ranked.fillna(ranked.mean() if ranked.notna().any() else 50.0)
 
 
+def zscore(series: pd.Series, invert: bool = False) -> pd.Series:
+    """Population z-score ((x - mean) / std) within the ranked pool, higher
+    is always better after inversion. Std of 0 (a constant column) maps to
+    an all-zero z-score rather than dividing by zero."""
+    s = series.astype(float)
+    if invert:
+        s = -s
+    std = s.std(ddof=0)
+    if not np.isfinite(std) or std == 0:
+        return pd.Series(0.0, index=s.index)
+    z = (s - s.mean()) / std
+    return z.fillna(0.0)
+
+
 def load_gk_matches() -> pd.DataFrame:
     pm = pd.read_csv(AGG_DIR / "player_match_metrics.csv")
     gk = pm[pm["position_group"] == "GK"].copy()
@@ -336,12 +350,16 @@ def score_submodels(season: pd.DataFrame) -> pd.DataFrame:
     scores = pd.DataFrame(index=ranked.index)
     for submodel, (col, invert) in pctile_map.items():
         scores[f"{submodel}_score"] = pctile(ranked[col], invert=invert)
+        scores[f"{submodel}_zscore"] = zscore(ranked[col], invert=invert)
 
     composite = pd.Series(0.0, index=ranked.index)
+    composite_z = pd.Series(0.0, index=ranked.index)
     for submodel, weight in SUBMODEL_WEIGHTS.items():
         composite += scores[f"{submodel}_score"] * weight
+        composite_z += scores[f"{submodel}_zscore"] * weight
     scores["goalkeeper_value_index"] = composite
     scores["goalkeeper_value_index_pctile"] = pctile(composite)
+    scores["goalkeeper_value_index_zscore"] = composite_z
 
     out = pd.concat([ranked, scores], axis=1)
     return out.sort_values("goalkeeper_value_index", ascending=False)
@@ -381,7 +399,7 @@ def main() -> None:
 
     print(f"Wrote {len(match_df)} keeper-match rows -> {OUT_DIR / 'goalkeeper_match_value.csv'}")
     print(f"Wrote {len(scored)} ranked keeper-season rows -> {OUT_DIR / 'goalkeeper_season_value_model.csv'}")
-    print(scored[["player", "team", "minutes", "matches", "goalkeeper_value_index", "goalkeeper_value_index_pctile"]].head(15).to_string(index=False))
+    print(scored[["player", "team", "minutes", "matches", "goalkeeper_value_index", "goalkeeper_value_index_pctile", "goalkeeper_value_index_zscore"]].head(15).to_string(index=False))
 
 
 if __name__ == "__main__":
