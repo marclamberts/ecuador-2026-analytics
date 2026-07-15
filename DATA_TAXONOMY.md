@@ -66,7 +66,7 @@ accelerations, progression), not GPS/tracking-based.
 |---|---|---|
 | Scouting | `Scripts/player_templates.py`, `Scripts/Scouting_Report_Universal.ipynb` | Templated player scouting reports built on top of `Aggregated/player_season_metrics.csv`. |
 | Recruitment model | `GDA/` (`gda_player_summary.csv`, `gda_action_values.csv`, `gda_zone_values.csv`, `gda_model_meta.json`) | Goal Difference Added = on-pitch GD + Markov possession action value; closest thing here to a recruitment/valuation signal. `Cross Models/models/*.pkl` (cross completion, chance creation, delivery value, goal contribution) are role-specific recruitment sub-models. |
-| Similarity | *(not yet built)* | No player-similarity / nearest-neighbour output exists yet in `Aggregated/` or `Scripts/`. Natural next step: build off `Aggregated/player_season_metrics.csv` + `player_season_core.csv`. |
+| Similarity | `Scripts/player_similarity.py` → `Aggregated/player_similarity.csv` | Cosine similarity over the engineered per-90/index metrics in `player_season_core.csv`, computed within each role group (Finisher/Ball-Winner/Creator/Progressor/Two-Way Connector), minutes-weighted per player, min. 450 minutes. `python3 player_similarity.py "E. Mero"` prints the top matches for one player. |
 | Benchmarking | `Aggregated/player_season_metrics.csv`, `team_season_metrics.csv`, `metric_dictionary.csv` (`_pctile` suffixed metrics), `Scripts/passing_metrics_compared.py`, `home_away_rating_gap.py`, `schedule_difficulty.py`, `season_projection.py` | League-wide percentile ranks and cross-team/cross-player comparisons. |
 | GK | `Danger Model/xg_output/` (`model_psxg*.pkl`, `model_multi_outcome.pkl`, `model_pontarget.pkl`, `multi_outcome_save.png`) · `Ecuador Team Viz/goalkeeper_buildup_ecuador2026.png` | PSxG and shot-outcome models double as the GK metrics layer (save quality vs. expected, shot suppression). |
 
@@ -84,5 +84,3 @@ shared infrastructure rather than a leaf category themselves:
 
 - **Prematch** player data is limited to the fixture list; there's no
   pre-match projection/lineup-news layer yet.
-- **Similarity** has no implementation yet — flagged above as the one empty
-  leaf in the Metrics branch.
