@@ -90,10 +90,11 @@ def plot_comparison(on_policy: dict, altered: dict, team_name: str, out_path: pa
         colors = [c for _, c, _ in policies]
         ax.bar(x, means, width=bar_w, color=colors, zorder=3)
         ax.errorbar(x, means, yerr=[los, his], fmt="none", ecolor=INK, elinewidth=1, capsize=3, zorder=4)
-        headroom = max(means) * 0.18 + 0.15
-        for xi, m in zip(x, means):
-            ax.text(xi, m + headroom, f"{m:.2f}%", ha="center", va="bottom", color=INK, fontsize=9)
-        ax.set_ylim(0, max(means) * 1.35 + headroom)
+        top = max(m + h for m, h in zip(means, his))
+        pad = top * 0.05 + 0.05
+        for xi, m, h in zip(x, means, his):
+            ax.text(xi, m + h + pad, f"{m:.2f}%", ha="center", va="bottom", color=INK, fontsize=9)
+        ax.set_ylim(0, top * 1.2 + pad)
         ax.set_xticks(x)
         ax.set_xticklabels(["On-policy", "Altered"], color=MUTED, fontsize=9)
         ax.set_title(title, color=INK, fontsize=11)
