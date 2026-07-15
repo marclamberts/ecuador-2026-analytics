@@ -40,6 +40,7 @@ INTERCEPTION = 8
 CLEARANCE = 12
 SHOT_TYPES = {13, 14, 15, 16}
 GOAL_TYPE = 16
+OWN_GOAL_QID = 28
 PLAYER_OFF = 18
 PLAYER_ON = 19
 TEAM_SET_UP = 34
@@ -223,12 +224,16 @@ def extract_episodes(match: dict, weight: float = 1.0) -> list[Episode]:
     events = match["event"]
     timelines = build_lineup_timeline(events)
 
+    def is_own_goal(e: dict) -> bool:
+        return any(int(q["qualifierId"]) == OWN_GOAL_QID for q in e.get("qualifier", []))
+
     relevant = [
         e
         for e in events
         if e.get("typeId") in CONTINUATION_TYPES | RESET_TYPES | SHOT_TYPES
         and e.get("x") is not None
         and e.get("contestantId")
+        and not (e.get("typeId") == GOAL_TYPE and is_own_goal(e))
     ]
     relevant.sort(key=lambda e: (e.get("periodId", 0), event_seconds(e)))
 
