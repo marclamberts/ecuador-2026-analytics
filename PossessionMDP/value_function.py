@@ -40,7 +40,7 @@ from hierarchy import (
     team_average_alpha,
 )
 from league_visuals import CLOCK_LABELS
-from run_analysis import BG, INK, MUTED
+from run_analysis import BG, INK, MUTED, add_source_line
 
 C_AMBER = "#ffc247"
 
@@ -135,11 +135,12 @@ def main() -> None:
     fig.text(0.5, 0.945, "P(this possession eventually ends in a goal), by pitch zone and possession clock "
                           "-- solved by value iteration on the fitted MDP",
               color=MUTED, fontsize=10.5, ha="center")
-    fig.text(0.5, 0.02, "Pitch runs bottom (own goal) to top (opponent goal). Numbers are V(s) x 100 "
+    fig.text(0.5, 0.035, "Pitch runs bottom (own goal) to top (opponent goal). Numbers are V(s) x 100 "
                         "for readability, e.g. \"2.1\" = a 2.1% chance this possession ends in a goal.",
               color=MUTED, fontsize=9, ha="center")
 
-    fig.tight_layout(rect=(0, 0.04, 1, 0.92))
+    fig.tight_layout(rect=(0, 0.06, 1, 0.92))
+    add_source_line(fig, y=0.006)
     fig.savefig(args.out, dpi=155, facecolor=BG)
     plt.close(fig)
     print(f"Saved {args.out}")

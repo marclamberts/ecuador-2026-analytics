@@ -32,7 +32,7 @@ from hierarchy import (
     lineup_exposure_weights,
     team_average_alpha,
 )
-from run_analysis import BG, C_CORAL, C_NAVY, INK, MUTED, plot_comparison
+from run_analysis import BG, C_CORAL, C_NAVY, INK, MUTED, add_source_line, plot_comparison
 from simulator import apply_directness_policy, simulate_policy, start_zone_distribution, summarize
 
 MUTED_FILL = "#2a3341"
@@ -104,6 +104,7 @@ def plot_possession_clock_hazard(props: np.ndarray, out_path: pathlib.Path) -> N
     ax.legend(handles[::-1], lbls[::-1], frameon=False, loc="center left",
               bbox_to_anchor=(1.01, 0.5), labelcolor=INK)
     fig.tight_layout()
+    add_source_line(fig)
     fig.savefig(out_path, dpi=160, facecolor=BG)
     plt.close(fig)
 
@@ -167,11 +168,12 @@ def plot_zone_heatmaps(shot_rate, goal_rate, shots, out_path: pathlib.Path) -> N
 
     fig.suptitle("Liga Pro: possession-MDP zone tendencies (whole league, attacking direction normalized)",
                   color=INK, fontsize=13)
-    fig.text(0.5, 0.01,
+    fig.text(0.5, 0.03,
               "Pitch runs bottom (own goal) to top (opponent goal); grid = the MDP's zone discretization. "
               f"\"n/a\" = fewer than {int(MIN_SHOTS_FOR_CONVERSION)} shots recorded from that zone.",
               color=MUTED, fontsize=9, ha="center")
-    fig.tight_layout(rect=(0, 0.03, 1, 0.95))
+    fig.tight_layout(rect=(0, 0.05, 1, 0.95))
+    add_source_line(fig, y=0.006)
     fig.savefig(out_path, dpi=160, facecolor=BG)
     plt.close(fig)
 
@@ -204,9 +206,10 @@ def plot_league_comparison(records: list[dict], exemplar_name: str, out_path: pa
     for spine in ("left", "bottom"):
         ax.spines[spine].set_color(MUTED)
     ax.set_title("Liga Pro on-policy possession simulation, ranked by goal rate", color=INK, fontsize=12)
-    fig.text(0.99, 0.005, f"Highlighted: {exemplar_name} (Figure 4 worked example)", color=C_CORAL,
-              fontsize=8.5, ha="right")
+    fig.text(0.01, 0.005, f"Highlighted: {exemplar_name} (Figure 4 worked example)", color=C_CORAL,
+              fontsize=8.5, ha="left")
     fig.tight_layout(rect=(0, 0.02, 1, 1))
+    add_source_line(fig)
     fig.savefig(out_path, dpi=160, facecolor=BG)
     plt.close(fig)
 

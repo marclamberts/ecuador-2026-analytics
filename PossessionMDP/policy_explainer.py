@@ -20,7 +20,7 @@ import numpy as np
 
 import mdp_model as mm
 from hierarchy import aggregate_counts, hierarchical_policy
-from run_analysis import BG, C_CORAL, C_NAVY, INK, MUTED
+from run_analysis import BG, C_CORAL, C_NAVY, INK, MUTED, add_source_line
 from simulator import apply_directness_policy
 
 
@@ -89,10 +89,11 @@ def plot_example(on_dist: dict, alt_dist: dict, state_desc: str, team_name: str,
         ax.spines[spine].set_color(MUTED)
     ax.set_title(f"{team_name}: on-policy vs altered-policy action mix\n{state_desc}", color=INK, fontsize=12)
     ax.legend(frameon=False, loc="upper right", labelcolor=INK, fontsize=9)
-    fig.text(0.5, 0.02, "Same fitted dynamics both ways — only the mix of attempted actions moves\n"
+    fig.text(0.5, 0.045, "Same fitted dynamics both ways — only the mix of attempted actions moves\n"
                         "(mass shifts from sideways/back toward advance/cross).",
               color=MUTED, fontsize=8.8, ha="center", linespacing=1.5)
-    fig.tight_layout(rect=(0, 0.08, 1, 1))
+    fig.tight_layout(rect=(0, 0.11, 1, 1))
+    add_source_line(fig, y=0.006)
     fig.savefig(out_path, dpi=160, facecolor=BG)
     plt.close(fig)
 

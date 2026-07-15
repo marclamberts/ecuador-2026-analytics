@@ -35,7 +35,7 @@ from hierarchy import (
     team_average_alpha,
 )
 from palette import team_color_map
-from run_analysis import BG, INK, MUTED
+from run_analysis import BG, INK, MUTED, add_source_line
 from simulator import simulate_policy, start_zone_distribution, summarize
 
 MUTED_2 = "#4a5568"
@@ -170,10 +170,11 @@ def main() -> None:
     ]
     legend_labels = [f"{v*100:.1f}% goal rate" for v in legend_sizes]
     ax.legend(legend_handles, legend_labels, frameon=False, labelcolor=INK,
-              loc="lower right", bbox_to_anchor=(1.05, -0.06), fontsize=8.5, handletextpad=1.2,
-              labelspacing=1.4, borderpad=0)
+              loc="lower left", bbox_to_anchor=(0.16, 0.1), fontsize=8.5, handletextpad=1.2,
+              labelspacing=1.2, borderpad=0)
 
     fig.tight_layout()
+    add_source_line(fig)
     fig.savefig(args.out, dpi=160, facecolor=BG)
     plt.close(fig)
     print(f"\nSaved {args.out}")

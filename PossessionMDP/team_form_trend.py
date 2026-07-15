@@ -23,7 +23,7 @@ import numpy as np
 
 import mdp_model as mm
 from palette import team_color_map
-from run_analysis import BG, INK, MUTED
+from run_analysis import BG, INK, MUTED, add_source_line
 
 MUTED_2 = "#4a5568"
 DOT_ALPHA = 0.35
@@ -123,6 +123,7 @@ def main() -> None:
     fig.text(0.01, 0.5, "Shots per possession", color=MUTED, fontsize=10, rotation=90, va="center")
 
     fig.tight_layout(rect=(0.015, 0, 1, 0.94))
+    add_source_line(fig)
     fig.savefig(args.out, dpi=155, facecolor=BG)
     plt.close(fig)
     print(f"Saved {args.out}")

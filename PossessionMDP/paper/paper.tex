@@ -36,7 +36,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\itshape Possession-Clock MDPs for Football}
-\fancyhead[R]{\small\itshape Waltzing Analytics}
+\fancyhead[R]{\small\itshape Lamberts}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -51,7 +51,8 @@
 A Bayesian Hierarchical Framework for Simulating and\\ Evaluating Tactical Policy}
 
 \author{
-Waltzing Analytics\thanks{Data and code available in the \texttt{PossessionMDP/} directory of the project repository; see the Data and Code Availability Statement.}\\
+Marc Lamberts\thanks{Data and code available in the \texttt{PossessionMDP/} directory of the project repository; see the Data and Code Availability Statement.}\\
+\small Waltzing Analytics\\
 \small \texttt{Ecuador 2026 Liga Pro Research Notes}
 }
 \date{\today}
@@ -86,7 +87,19 @@ This paper adapts the possession-MDP framework to football possessions, using th
 \section{Related Work}
 \label{sec:related}
 
+\subsection{Possession- and sequence-value modeling}
 Possession-outcome modeling in basketball has an established literature; \citet{cervone2016multiresolution} model basketball possessions as a multiresolution stochastic process to produce a point-value estimate for every moment of a possession, from which league-wide and player-specific value can be derived. The present work follows the same broad ambition -- turning a possession into a stochastic process whose value can be solved for and whose policy can be perturbed -- but adapts it to a football-specific state representation (pitch zone crossed with possession clock, rather than continuous player-tracking coordinates), and to football's characteristic data constraints: far fewer possessions are observed per team per season than in basketball, motivating the three-level Bayesian hierarchy and the team-average transition-weighting scheme that are the technical core of this paper.
+
+Within football specifically, \citet{fernandez2019decomposing} decompose an analogous \emph{expected possession value} into pass, dribble, and shot subcomponents estimated from player-tracking data, and \citet{decroos2019actions} value every on-the-ball action league-wide via the change in scoring/conceding probability it induces (VAEP), an event-based, model-free alternative to the zone-and-clock state representation used here. Closest to the present work in spirit, \citet{lecoz2026semimarkov} propose a semi-Markov framework for football possessions that, like ours, treats time since an event as a first-class covariate of the transition dynamics rather than assuming a memoryless (stationary) process, modeling sojourn times directly rather than discretizing them into a clock; \citet{vanarem2026modelquality} separately study how much event-count data an Expected Threat-style value model needs before its zone-level estimates become reliable, a question our hierarchical shrinkage (Section~\ref{sec:hierarchy}) is designed to address by pooling across lineups, teams, and the league rather than by requiring more data per cell outright. \citet{fernandez2018wideopenspaces} take possession value modeling in a complementary, off-ball direction, using player-tracking data to quantify space creation via a pitch-control surface; the zone-based state representation used in this paper can be read as a coarse, low-data-requirement discretization of the same underlying idea.
+
+\subsection{Team and player rating, and style}
+\citet{constantinou2013determining} introduce the pi-rating system used elsewhere in this project's own league-rating tooling, a dynamic Bradley--Terry-style rating driven by the discrepancy between expected and observed score margins; \citet{dixoncoles1997modelling} give the classic statistical treatment of football scorelines via a bivariate Poisson model with a low-score correlation correction, foundational to nearly all subsequent probabilistic football forecasting. \citet{clijmans2023looking} analyze a team's \emph{intrinsic} playing style net of the game states it happens to face, a question closely related to, but distinct from, the revealed build-up style geometry of Section~\ref{sec:results}, which does not attempt to net out game-state context.
+
+\subsection{Decision-making, game theory, and evaluation}
+\citet{rahimian2024datadriven} apply deep reinforcement learning directly to soccer event and tracking data to recover optimal offensive and defensive decision policies, the same policy-evaluation ambition pursued here via a hierarchical MDP rather than a learned deep policy. \citet{chiappori2002testing} provide the canonical test of mixed-strategy equilibrium play in a sporting context (penalty kicks), the intellectual antecedent of the game-theoretic caveat raised in Section~\ref{sec:gametheory}: any counterfactual policy analysis of one side's decisions, ours included, is incomplete without a model of how the opposing side would adapt. \citet{mead2023expected} and \citet{baumer2023bigideas} respectively ground the expected-goals literature this paper's shot/goal terminal states draw on, and survey the broader family of ``expected value of a game state'' methods -- of which the MDP value function of Section~\ref{sec:valuefunction} is one instance -- across sports.
+
+\subsection{Statistical and methodological foundations}
+The Markov decision process formalism of Section~\ref{sec:mdp} and the value-iteration solution method of Section~\ref{sec:valuefunction} follow the standard treatment in \citet{puterman1994markov} and \citet{suttonbarto2018reinforcement}. The hierarchical Bayesian shrinkage of Section~\ref{sec:hierarchy} is an application of the general multilevel modeling framework described in \citet{gelmanhill2007data}, and specifically of the same partial-pooling principle demonstrated on baseball batting averages by \citet{efronmorris1975data}, whose empirical Bayes estimator is the classical antecedent of the Dirichlet--Multinomial cascade used here.
 
 \section{Data}
 \label{sec:data}
@@ -95,7 +108,7 @@ We use Opta/Stats Perform F24-style event data from the 2026 Ecuadorian Liga Pro
 
 \begin{table}[htbp]
 \centering
-\caption{Dataset summary statistics, 2026 Ecuadorian Liga Pro season.}
+\caption{Dataset summary statistics, 2026 Ecuadorian Liga Pro season.\\[4pt]{\footnotesize\textit{Source: Author's compilation from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{tab:dataset}
 \begin{tabular}{@{}lr@{}}
 \toprule
@@ -166,7 +179,7 @@ Counts are further weighted by an exponential recency factor $w_k = \rho^{(K-k)/
 
 \begin{table}[htbp]
 \centering
-\caption{Model hyperparameters and state-space cardinality.}
+\caption{Model hyperparameters and state-space cardinality.\\[4pt]{\footnotesize\textit{Source: Author's model specification.}}}
 \label{tab:hyperparameters}
 \begin{tabular}{@{}llr@{}}
 \toprule
@@ -238,7 +251,7 @@ Figure~\ref{fig:valuefunction} shows the solved value function for Independiente
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{value_function_independiente_del_valle.png}
-\caption{Solved value function $V(s)$ for Independiente del Valle: probability that a possession beginning in each pitch zone, at each possession-clock bucket, eventually ends in a goal. Value increases smoothly toward the opponent's goal in every clock bucket.}
+\caption{Solved value function $V(s)$ for Independiente del Valle: probability that a possession beginning in each pitch zone, at each possession-clock bucket, eventually ends in a goal. Value increases smoothly toward the opponent's goal in every clock bucket.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:valuefunction}
 \end{figure}
 
@@ -287,14 +300,14 @@ Figure~\ref{fig:hazard} shows, league-wide, the share of on-ball actions that co
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{possession_clock_hazard.png}
-\caption{League-wide possession outcome by possession-clock bucket. Turnover risk peaks immediately after winning the ball rather than as the clock runs out.}
+\caption{League-wide possession outcome by possession-clock bucket. Turnover risk peaks immediately after winning the ball rather than as the clock runs out.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:hazard}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{team_clock_hazard.png}
-\caption{Turnover risk by possession clock, per team, with the three steadiest and three most fragile teams highlighted against the league.}
+\caption{Turnover risk by possession clock, per team, with the three steadiest and three most fragile teams highlighted against the league.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:teamhazard}
 \end{figure}
 
@@ -305,7 +318,7 @@ Figure~\ref{fig:zoneheatmaps} shows shot-attempt rate and goal-conversion rate b
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{zone_heatmaps.png}
-\caption{League-wide shot-attempt rate and goal-conversion rate by pitch zone. Zones with fewer than 15 shots are masked (``n/a'') rather than reported.}
+\caption{League-wide shot-attempt rate and goal-conversion rate by pitch zone. Zones with fewer than 15 shots are masked (``n/a'') rather than reported.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:zoneheatmaps}
 \end{figure}
 
@@ -316,7 +329,7 @@ The fitted policy also characterizes each team's revealed build-up \emph{style}:
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.72\textwidth]{team_style_ternary.png}
-\caption{Forward/sideways/backward share of every non-shot action attempted, by team; marker size is simulated on-policy goal rate per possession.}
+\caption{Forward/sideways/backward share of every non-shot action attempted, by team; marker size is simulated on-policy goal rate per possession.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:ternary}
 \end{figure}
 
@@ -327,7 +340,7 @@ Because possession episodes carry match dates, the same shot-ending-rate-per-pos
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{team_form_trend.png}
-\caption{Five-match rolling average of shot-ending rate per possession, all 16 teams, ranked by current form. Faint points are single-match values.}
+\caption{Five-match rolling average of shot-ending rate per possession, all 16 teams, ranked by current form. Faint points are single-match values.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:formtrend}
 \end{figure}
 
@@ -338,7 +351,7 @@ Figure~\ref{fig:leaguecomparison} ranks all 16 teams by simulated on-policy goal
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{league_team_comparison.png}
-\caption{Simulated on-policy goal rate per possession, all 16 teams, with 95\% predictive intervals.}
+\caption{Simulated on-policy goal rate per possession, all 16 teams, with 95\% predictive intervals.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:leaguecomparison}
 \end{figure}
 
@@ -352,7 +365,7 @@ We define a mechanical ``directness'' policy alteration: in the middle and attac
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.72\textwidth]{policy_action_mix_independiente_del_valle.png}
-\caption{On-policy vs.\ altered-policy action-choice probabilities for one real fitted state. Only the decision mix moves; the fitted dynamics are identical under both policies.}
+\caption{On-policy vs.\ altered-policy action-choice probabilities for one real fitted state. Only the decision mix moves; the fitted dynamics are identical under both policies.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:actionmix}
 \end{figure}
 
@@ -386,7 +399,7 @@ $\bar\Delta \leftarrow \frac{1}{W}\sum_w \Delta(w)$; $\hat\sigma_\Delta \leftarr
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{policy_comparison_independiente_del_valle.png}
-\caption{On-policy vs.\ altered-policy simulated possession outcomes for Independiente del Valle, with 95\% predictive intervals.}
+\caption{On-policy vs.\ altered-policy simulated possession outcomes for Independiente del Valle, with 95\% predictive intervals.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:policycomparison}
 \end{figure}
 
@@ -397,7 +410,7 @@ Figure~\ref{fig:directness} ranks all 16 teams by the paired-simulation estimate
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{directness_ranking.png}
-\caption{Change in simulated on-policy goal rate under the altered (``more direct'') policy, all 16 teams, with 95\% confidence intervals of the mean paired effect.}
+\caption{Change in simulated on-policy goal rate under the altered (``more direct'') policy, all 16 teams, with 95\% confidence intervals of the mean paired effect.\\[4pt]{\footnotesize\textit{Source: Marc Lamberts, Waltzing Analytics (2026), from Opta/Stats Perform Ecuadorian Liga Pro event data.}}}
 \label{fig:directness}
 \end{figure}
 
@@ -416,19 +429,108 @@ The zone/clock/action discretization is coarse by design; finer grids would need
 We have adapted a shot-clock-dependent basketball possession-MDP framework to football, replacing the shot clock with an endogenous possession clock, and shown that the resulting model is fittable to a single season of league event data via a three-level Bayesian hierarchy and a lineup-to-team-average transition-weighting scheme with a provable expected-count consistency property. The fitted model's value function, possession-clock hazard curves, and build-up-style geometry all produce qualitatively sensible, non-trivial results, and its explicit separation of policy from dynamics supports counterfactual policy simulation -- provided that rare-event comparisons are estimated with a paired design, which we show is necessary rather than optional. The game-theoretic caveat of Section~\ref{sec:gametheory} bounds how far any single-agent counterfactual simulation of this kind can be trusted, and motivates the natural next step of an opponent-adaptive extension.
 
 \section*{Data and Code Availability Statement}
-The complete implementation -- possession segmentation, hierarchical model fitting, the team-average weighting scheme, the Monte Carlo simulator, value iteration, and every figure in this paper -- is available in the \texttt{PossessionMDP/} directory of the project repository, along with the underlying Opta/Stats Perform event data for the season analyzed.
+All modeling, analysis, and software described in this paper constitute original research conducted by Marc Lamberts, Waltzing Analytics, in 2026. The complete implementation -- possession segmentation, hierarchical model fitting, the team-average weighting scheme, the Monte Carlo simulator, value iteration, and every figure in this paper -- is available in the \texttt{PossessionMDP/} directory of the project repository, along with the underlying Opta/Stats Perform event data for the season analyzed.
 
 \section*{Acknowledgments}
 We thank the data provider for the underlying Opta/Stats Perform event feed and the Ecuadorian Liga Pro clubs whose 2026-season matches constitute the dataset analyzed in this paper.
 
 \bibliographystyle{apalike}
-\begin{thebibliography}{1}
+\begin{thebibliography}{17}
 
 \bibitem[Cervone et al.(2016)]{cervone2016multiresolution}
 Cervone, D., D'Amour, A., Bornn, L., and Goldsberry, K. (2016).
 \newblock A multiresolution stochastic process model for predicting basketball possession outcomes.
 \newblock \emph{Journal of the American Statistical Association}, 111(514).
 \newblock \doi{10.1080/01621459.2016.1141685}.
+
+\bibitem[Fern\'{a}ndez et al.(2019)]{fernandez2019decomposing}
+Fern\'{a}ndez, J., Bornn, L., and Cervone, D. (2019).
+\newblock Decomposing the immeasurable sport: A deep learning expected possession value framework for soccer.
+\newblock In \emph{Proceedings of the 13th MIT Sloan Sports Analytics Conference}.
+
+\bibitem[Fern\'{a}ndez and Bornn(2018)]{fernandez2018wideopenspaces}
+Fern\'{a}ndez, J. and Bornn, L. (2018).
+\newblock Wide open spaces: A statistical technique for measuring space creation in professional soccer.
+\newblock In \emph{Proceedings of the 12th MIT Sloan Sports Analytics Conference}.
+
+\bibitem[Decroos et al.(2019)]{decroos2019actions}
+Decroos, T., Bransen, L., Van Haaren, J., and Davis, J. (2019).
+\newblock Actions speak louder than goals: Valuing player actions in soccer.
+\newblock In \emph{Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining (KDD '19)}, pages 1851--1861.
+\newblock \doi{10.1145/3292500.3330758}.
+
+\bibitem[Le Coz et al.(2026)]{lecoz2026semimarkov}
+Le Coz, S., Boustila, F., and Imbach, F. (2026).
+\newblock A semi-Markov framework for modeling football possessions and temporal expected threat.
+\newblock \emph{Scientific Reports}, 16.
+\newblock \doi{10.1038/s41598-026-52938-1}.
+
+\bibitem[van Arem et al.(2026)]{vanarem2026modelquality}
+van Arem, K., S\"{o}hl, J., Bruinsma, M., and Jongbloed, G. (2026).
+\newblock Model quality in football: Quantifying the quality of an Expected Threat model.
+\newblock \emph{arXiv preprint arXiv:2604.21087}.
+
+\bibitem[Constantinou and Fenton(2013)]{constantinou2013determining}
+Constantinou, A. C. and Fenton, N. E. (2013).
+\newblock Determining the level of ability of football teams by dynamic ratings based on the relative discrepancies in scores between adversaries.
+\newblock \emph{Journal of Quantitative Analysis in Sports}, 9(1):37--50.
+\newblock \doi{10.1515/jqas-2012-0036}.
+
+\bibitem[Dixon and Coles(1997)]{dixoncoles1997modelling}
+Dixon, M. J. and Coles, S. G. (1997).
+\newblock Modelling association football scores and inefficiencies in the football betting market.
+\newblock \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, 46(2):265--280.
+\newblock \doi{10.1111/1467-9876.00065}.
+
+\bibitem[Clijmans et al.(2023)]{clijmans2023looking}
+Clijmans, J., Van Roy, M., and Davis, J. (2023).
+\newblock Looking beyond the past: Analyzing the intrinsic playing style of soccer teams.
+\newblock In \emph{Machine Learning and Data Mining for Sports Analytics (MLSA 2022)}, pages 281--292. Springer.
+\newblock \doi{10.1007/978-3-031-26422-1\_23}.
+
+\bibitem[Rahimian and Toka(2024)]{rahimian2024datadriven}
+Rahimian, P. and Toka, L. (2024).
+\newblock A data-driven approach to assist offensive and defensive players in optimal decision making.
+\newblock \emph{International Journal of Sports Science \& Coaching}, 19(1):245--256.
+\newblock \doi{10.1177/17479541221149481}.
+
+\bibitem[Chiappori et al.(2002)]{chiappori2002testing}
+Chiappori, P.-A., Levitt, S., and Groseclose, T. (2002).
+\newblock Testing mixed-strategy equilibria when players are heterogeneous: The case of penalty kicks in soccer.
+\newblock \emph{American Economic Review}, 92(4):1138--1151.
+
+\bibitem[Mead et al.(2023)]{mead2023expected}
+Mead, J., O'Hare, A., and McMenemy, P. (2023).
+\newblock Expected goals in football: Improving model performance and demonstrating value.
+\newblock \emph{PLOS ONE}, 18(4):e0282295.
+\newblock \doi{10.1371/journal.pone.0282295}.
+
+\bibitem[Baumer et al.(2023)]{baumer2023bigideas}
+Baumer, B. S., Matthews, G. J., and Nguyen, Q. (2023).
+\newblock Big ideas in sports analytics and statistical tools for their investigation.
+\newblock \emph{WIREs Computational Statistics}, 15(6):e1612.
+\newblock \doi{10.1002/wics.1612}.
+
+\bibitem[Puterman(1994)]{puterman1994markov}
+Puterman, M. L. (1994).
+\newblock \emph{Markov Decision Processes: Discrete Stochastic Dynamic Programming}.
+\newblock John Wiley \& Sons, New York.
+
+\bibitem[Sutton and Barto(2018)]{suttonbarto2018reinforcement}
+Sutton, R. S. and Barto, A. G. (2018).
+\newblock \emph{Reinforcement Learning: An Introduction}.
+\newblock MIT Press, Cambridge, MA, 2nd edition.
+
+\bibitem[Gelman and Hill(2007)]{gelmanhill2007data}
+Gelman, A. and Hill, J. (2007).
+\newblock \emph{Data Analysis Using Regression and Multilevel/Hierarchical Models}.
+\newblock Cambridge University Press, New York.
+
+\bibitem[Efron and Morris(1975)]{efronmorris1975data}
+Efron, B. and Morris, C. (1975).
+\newblock Data analysis using Stein's estimator and its generalizations.
+\newblock \emph{Journal of the American Statistical Association}, 70(350):311--319.
+\newblock \doi{10.1080/01621459.1975.10479864}.
 
 \end{thebibliography}
 

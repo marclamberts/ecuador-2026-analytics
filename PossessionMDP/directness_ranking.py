@@ -23,7 +23,7 @@ from hierarchy import (
     lineup_exposure_weights,
     team_average_alpha,
 )
-from run_analysis import BG, INK, MUTED
+from run_analysis import BG, INK, MUTED, add_source_line
 from simulator import apply_directness_policy, mean_ci, simulate_policy_pair, start_zone_distribution, summarize
 
 C_GAIN = "#57c785"
@@ -114,11 +114,12 @@ def main() -> None:
               f"Simulated effect of a +{args.directness_shift:.0%} directness shift in the middle and "
               "attacking thirds, dynamics held fixed (README.md §6-7)",
               color=MUTED, fontsize=9.8, ha="center")
-    fig.text(0.5, 0.012, "Reflects the immediate, fixed-defense upside of the change, not a steady-state "
+    fig.text(0.5, 0.028, "Reflects the immediate, fixed-defense upside of the change, not a steady-state "
                          "prediction once opponents adapt — see README.md §7.",
               color=MUTED, fontsize=8.6, ha="center")
 
-    fig.tight_layout(rect=(0, 0.05, 1, 0.93))
+    fig.tight_layout(rect=(0, 0.06, 1, 0.93))
+    add_source_line(fig, y=0.006)
     fig.savefig(args.out, dpi=160, facecolor=BG)
     plt.close(fig)
     print(f"\nSaved {args.out}")

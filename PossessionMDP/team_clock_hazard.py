@@ -21,7 +21,7 @@ from matplotlib.ticker import FuncFormatter
 import mdp_model as mm
 from hierarchy import aggregate_counts
 from league_visuals import CLOCK_LABELS
-from run_analysis import BG, INK, MUTED
+from run_analysis import BG, INK, MUTED, add_source_line
 
 MUTED_2 = "#4a5568"
 
@@ -123,11 +123,12 @@ def main() -> None:
     fig.text(0.5, 0.955, f"The {n_highlight} steadiest and {n_highlight} most fragile teams late in a "
                          f"possession, highlighted against all {len(curves)} teams",
               color=MUTED, fontsize=10.5, ha="center")
-    fig.text(0.5, 0.01, "Most teams share the league-wide shape — a spike in the first 5 seconds after "
+    fig.text(0.5, 0.028, "Most teams share the league-wide shape — a spike in the first 5 seconds after "
                         "winning the ball, then a flatter plateau — but starting level and slope both vary.",
               color=MUTED, fontsize=9.2, ha="center")
 
-    fig.tight_layout(rect=(0, 0.03, 1, 0.92))
+    fig.tight_layout(rect=(0, 0.05, 1, 0.92))
+    add_source_line(fig, y=0.006)
     fig.savefig(args.out, dpi=160, facecolor=BG)
     plt.close(fig)
     print(f"Saved {args.out}")

@@ -32,6 +32,14 @@ C_CORAL = "#ff8a75"
 INK = "#e6edf3"
 MUTED = "#8b949e"
 
+SOURCE_LINE = "Marc Lamberts, Waltzing Analytics (2026) · Opta/Stats Perform Ecuadorian Liga Pro event data"
+
+
+def add_source_line(fig, y: float = 0.006) -> None:
+    """Stamps the standard attribution line in the bottom-right corner of a
+    figure. Call once, right before fig.savefig()."""
+    fig.text(0.995, y, SOURCE_LINE, color=MUTED, fontsize=7, ha="right", va="bottom", style="italic")
+
 
 def parse_args() -> argparse.Namespace:
     here = pathlib.Path(__file__).resolve().parent
@@ -107,8 +115,9 @@ def plot_comparison(on_policy: dict, altered: dict, team_name: str, out_path: pa
     fig.suptitle(f"{team_name}: on-policy vs altered-policy possession simulation", color=INK, fontsize=13)
     handles = [plt.Rectangle((0, 0), 1, 1, color=c) for _, c, _ in policies]
     labels = [lbl for _, _, lbl in policies]
-    fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False, labelcolor=INK, bbox_to_anchor=(0.5, -0.02))
-    fig.tight_layout(rect=(0, 0.05, 1, 0.94))
+    fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False, labelcolor=INK, bbox_to_anchor=(0.5, 0.02))
+    fig.tight_layout(rect=(0, 0.09, 1, 0.94))
+    add_source_line(fig, y=0.006)
     fig.savefig(out_path, dpi=160, facecolor=BG)
     plt.close(fig)
 
