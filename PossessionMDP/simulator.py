@@ -102,11 +102,92 @@ def simulate_policy(
     }
 
 
+def _episode_stats(outcomes: list, steps_list: list) -> dict:
+    n = len(outcomes)
+    return {
+        "goal_rate": sum(o == mm.GOAL for o in outcomes) / n,
+        "shot_rate": sum(o in (mm.GOAL, mm.NOGOAL_SHOT) for o in outcomes) / n,
+        "turnover_rate": sum(o == mm.TURNOVER for o in outcomes) / n,
+        "mean_steps": sum(steps_list) / n,
+    }
+
+
+def simulate_policy_pair(
+    cid: str,
+    alpha_table: dict,
+    policy_a: dict,
+    policy_b: dict,
+    start_dist: dict[int, float],
+    rng: np.random.Generator,
+    n_worlds: int = 30,
+    episodes_per_world: int = 400,
+) -> dict:
+    """Like simulate_policy, but runs both policies against the *same*
+    per-world dynamics draw (shared draw_cache) so the only thing that
+    differs between them within a world is the decision rule. Rare-event
+    metrics like goal_rate are noisy enough that comparing two
+    independently-drawn simulations (two separate simulate_policy calls)
+    can flip sign between runs on Monte Carlo noise alone; pairing removes
+    that shared source of variance from the comparison and leaves only the
+    effect actually attributable to the policy change."""
+    if not start_dist:
+        empty = {"goal_rate": [], "shot_rate": [], "turnover_rate": [], "mean_steps": []}
+        return {"a": empty, "b": empty, "delta_goal_rate": []}
+
+    stats_a, stats_b, delta_goal = [], [], []
+    for _ in range(n_worlds):
+        draw_cache: dict = {}
+        outcomes_a, steps_a, outcomes_b, steps_b = [], [], [], []
+        for _ in range(episodes_per_world):
+            z0 = _sample_categorical(rng, start_dist)
+            o, s = rollout(cid, z0, policy_a, alpha_table, draw_cache, rng)
+            outcomes_a.append(o)
+            steps_a.append(s)
+        for _ in range(episodes_per_world):
+            z0 = _sample_categorical(rng, start_dist)
+            o, s = rollout(cid, z0, policy_b, alpha_table, draw_cache, rng)
+            outcomes_b.append(o)
+            steps_b.append(s)
+        sa, sb = _episode_stats(outcomes_a, steps_a), _episode_stats(outcomes_b, steps_b)
+        stats_a.append(sa)
+        stats_b.append(sb)
+        delta_goal.append(sb["goal_rate"] - sa["goal_rate"])
+
+    def stack(stats_list, key):
+        return [s[key] for s in stats_list]
+
+    return {
+        "a": {k: stack(stats_a, k) for k in ("goal_rate", "shot_rate", "turnover_rate", "mean_steps")},
+        "b": {k: stack(stats_b, k) for k in ("goal_rate", "shot_rate", "turnover_rate", "mean_steps")},
+        "delta_goal_rate": delta_goal,
+    }
+
+
 def summarize(samples: list[float]) -> tuple[float, float, float]:
+    """(mean, 2.5th pct, 97.5th pct) of the raw per-world samples -- the
+    predictive spread across simulated seasons, e.g. "if we ran one season,
+    what range of goal rates might we see"."""
     if not samples:
         return (float("nan"),) * 3
     arr = np.array(samples)
     return float(arr.mean()), float(np.percentile(arr, 2.5)), float(np.percentile(arr, 97.5))
+
+
+def mean_ci(samples: list[float]) -> tuple[float, float, float]:
+    """(mean, lo, hi) 95% CI of the *mean* via the normal approximation
+    (mean +/- 1.96 * SEM) -- how confidently we know the average effect,
+    not the predictive spread of any one simulated world. Use this rather
+    than summarize() when comparing a per-world paired difference, where
+    the individual-world spread is much wider than the uncertainty in the
+    average effect it's estimating."""
+    if not samples:
+        return (float("nan"),) * 3
+    arr = np.array(samples)
+    mean = float(arr.mean())
+    if len(arr) < 2:
+        return mean, mean, mean
+    sem = float(arr.std(ddof=1)) / np.sqrt(len(arr))
+    return mean, mean - 1.96 * sem, mean + 1.96 * sem
 
 
 def apply_directness_policy(team_policy: dict, cid: str, shift: float = 0.15) -> dict:

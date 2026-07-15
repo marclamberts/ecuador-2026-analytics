@@ -34,6 +34,7 @@ from hierarchy import (
     lineup_exposure_weights,
     team_average_alpha,
 )
+from palette import team_color_map
 from run_analysis import BG, INK, MUTED
 from simulator import simulate_policy, start_zone_distribution, summarize
 
@@ -43,12 +44,6 @@ GRID_COLOR = "#2a3341"
 V_TOP = np.array([0.5, np.sqrt(3) / 2])   # Forward (advance + cross)
 V_RIGHT = np.array([1.0, 0.0])            # Sideways
 V_LEFT = np.array([0.0, 0.0])             # Backward
-
-TEAM_COLORS = [
-    "#4da3e8", "#ff9179", "#f2c14e", "#9b8ce0", "#57c785", "#e069a6",
-    "#5ec8d8", "#e0904a", "#a8d65e", "#c179d1", "#e0555f", "#4fb8a0",
-    "#f0a13c", "#7b93e0", "#c9a13c", "#6fd1a0",
-]
 
 
 def parse_args() -> argparse.Namespace:
@@ -150,10 +145,11 @@ def main() -> None:
     ax.set_facecolor(BG)
     draw_ternary_frame(ax)
 
+    color_map = team_color_map([r["name"] for r in rows])
     texts = []
     for i, r in enumerate(rows):
         xy = bary_to_cart(r["forward"], r["sideways"], r["backward"])
-        color = TEAM_COLORS[i % len(TEAM_COLORS)]
+        color = color_map[r["name"]]
         ax.scatter(*xy, s=sizes[i], color=color, edgecolor=BG, linewidth=1.2, zorder=5, alpha=0.92)
         texts.append(ax.text(xy[0], xy[1], r["name"], color=color, fontsize=9.5, zorder=6,
                               fontweight="bold"))
