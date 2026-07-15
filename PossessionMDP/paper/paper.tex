@@ -6,6 +6,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
@@ -16,14 +17,28 @@
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{abstract}
+\usepackage{fancyhdr}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 \graphicspath{{figures/}}
 
 \titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
 \titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{}
 
-\newtheorem{proposition}{Proposition}
-\newtheorem{assumption}{Assumption}
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{assumption}{Assumption}[section]
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape Possession-Clock MDPs for Football}
+\fancyhead[R]{\small\itshape Waltzing Analytics}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\E}{\mathbb{E}}
@@ -36,17 +51,28 @@
 A Bayesian Hierarchical Framework for Simulating and\\ Evaluating Tactical Policy}
 
 \author{
-Waltzing Analytics\\
+Waltzing Analytics\thanks{Data and code available in the \texttt{PossessionMDP/} directory of the project repository; see the Data and Code Availability Statement.}\\
 \small \texttt{Ecuador 2026 Liga Pro Research Notes}
 }
 \date{\today}
 
 \begin{document}
+\pagestyle{empty}
 \maketitle
 
 \begin{abstract}
-We model football possessions as episodes from team-specific nonstationary Markov decision processes (MDPs) with transition probabilities that depend on the \emph{possession clock} -- the time elapsed since a team won the ball -- adapting a modeling framework originally developed for shot-clock-dependent basketball play simulation. Bayesian hierarchical models parametrize these transition probabilities, pooling across lineups, opponents, and the season via a three-level (league, team, lineup) Dirichlet-Multinomial cascade. To keep multi-lineup, season-long simulation tractable, we combine lineup-specific MDPs into a single team-average MDP using a transition-weighting scheme: the team-average process is constructed so that its expected transition count for any state pair equals the exposure-weighted sum of the expected counts of the separate lineup-specific MDPs. We solve the resulting nonstationary MDPs for their value functions by value iteration, and use them to drive a Monte Carlo possession simulator in which posterior parameter uncertainty is propagated into simulated outcomes. Fitting the model to a full season of Ecuadorian Liga Pro event data (136 matches, 16 teams, 37{,}075 possession episodes), we find that turnover risk peaks in the first five seconds after winning the ball rather than rising monotonically as the possession clock runs out, that value is a smooth, monotonically increasing function of proximity to goal peaking inside the penalty area, and that teams occupy a comparably-sized region of forward/sideways/backward build-up styles rather than clustering near any one extreme. We further show that a naive comparison of two independently-simulated policies is statistically unreliable for rare-event outcomes such as goals -- a paired-simulation design that shares the dynamics draw across both policies is required to obtain a stable estimate of a policy change's effect -- and use the corrected estimator to rank all 16 league teams by their simulated benefit from a more direct style of play. We close with a discussion of the game-theoretic limits of fixed-dynamics counterfactual simulation.
+\noindent
+We model football possessions as episodes from team-specific nonstationary Markov decision processes (MDPs) with transition probabilities that depend on the \emph{possession clock} -- the time elapsed since a team won the ball -- adapting a modeling framework originally developed for shot-clock-dependent basketball play simulation. Bayesian hierarchical models parametrize these transition probabilities, pooling across lineups, opponents, and the season via a three-level (league, team, lineup) Dirichlet-Multinomial cascade. To keep multi-lineup, season-long simulation tractable, we combine lineup-specific MDPs into a single team-average MDP using a transition-weighting scheme: the team-average process is constructed so that its expected transition count for any state pair equals the exposure-weighted sum of the expected counts of the separate lineup-specific MDPs, a property we state and prove formally. We solve the resulting nonstationary MDPs for their value functions by value iteration, and use them to drive a Monte Carlo possession simulator in which posterior parameter uncertainty is propagated into simulated outcomes. Fitting the model to a full season of Ecuadorian Liga Pro event data (136 matches, 16 teams, 37{,}075 possession episodes), we find that turnover risk peaks in the first five seconds after winning the ball rather than rising monotonically as the possession clock runs out, that value is a smooth, monotonically increasing function of proximity to goal peaking inside the penalty area, and that teams occupy a comparably-sized region of forward/sideways/backward build-up styles rather than clustering near any one extreme. We further show that a naive comparison of two independently-simulated policies is statistically unreliable for rare-event outcomes such as goals -- a paired-simulation design that shares the dynamics draw across both policies is required to obtain a stable estimate of a policy change's effect -- and use the corrected estimator to rank all 16 league teams by their simulated benefit from a more direct style of play. We close with a discussion of the game-theoretic limits of fixed-dynamics counterfactual simulation.
+
+\vspace{0.8em}
+\noindent\textbf{Keywords:} Markov decision processes; Bayesian hierarchical models; Dirichlet--Multinomial conjugacy; sports analytics; association football; possession modeling; Monte Carlo simulation; policy evaluation.
 \end{abstract}
+
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\tableofcontents
+\clearpage
 
 \section{Introduction}
 \label{sec:intro}
@@ -65,38 +91,65 @@ Possession-outcome modeling in basketball has an established literature; \citet{
 \section{Data}
 \label{sec:data}
 
-We use Opta/Stats Perform F24-style event data from the 2026 Ecuadorian Liga Pro season: 136 matches across 16 teams, covering every on-ball event (passes, take-ons, tackles, interceptions, clearances, aerials, ball recoveries, shots, goals, substitutions, and starting lineups) with pitch coordinates, qualifiers, and timestamps. Team lineups at every point in a match are reconstructed from starting-XI and substitution events. Possession episodes are segmented directly from the chronological event stream: a new episode begins whenever ball control changes to a different team (a successful pass, take-on, aerial win, or recovery), and ends in a goal, a saved or missed shot, a failed pass or take-on, a defensive interception, tackle, clearance, or foul conceded, or the end of a playing period. Across the season this yields 37{,}075 possession episodes. Own-goal events (identified by the Opta ``own goal'' qualifier) are excluded from the shot/goal stream, since they are otherwise misattributed to the benefiting team as a shot taken from wherever the defensive touch occurred -- typically deep in that team's own defensive third -- which would corrupt both the fitted transition probabilities and the value function described in Section~\ref{sec:valuefunction}.
+We use Opta/Stats Perform F24-style event data from the 2026 Ecuadorian Liga Pro season: 136 matches across 16 teams, covering every on-ball event (passes, take-ons, tackles, interceptions, clearances, aerials, ball recoveries, shots, goals, substitutions, and starting lineups) with pitch coordinates, qualifiers, and timestamps. Team lineups at every point in a match are reconstructed from starting-XI and substitution events. Possession episodes are segmented directly from the chronological event stream: a new episode begins whenever ball control changes to a different team (a successful pass, take-on, aerial win, or recovery), and ends in a goal, a saved or missed shot, a failed pass or take-on, a defensive interception, tackle, clearance, or foul conceded, or the end of a playing period. Own-goal events (identified by the Opta ``own goal'' qualifier) are excluded from the shot/goal stream, since they are otherwise misattributed to the benefiting team as a shot taken from wherever the defensive touch occurred -- typically deep in that team's own defensive third -- which would corrupt both the fitted transition probabilities and the value function described in Section~\ref{sec:valuefunction}. Table~\ref{tab:dataset} summarizes the resulting dataset.
+
+\begin{table}[htbp]
+\centering
+\caption{Dataset summary statistics, 2026 Ecuadorian Liga Pro season.}
+\label{tab:dataset}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Statistic & Value \\
+\midrule
+Matches & 136 \\
+Teams & 16 \\
+Possession episodes & 37{,}075 \\
+Mean episodes per team & $\approx$2{,}317 \\
+Own-goal events excluded from the shot/goal stream & 8 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Football Possessions as Episodes of a Nonstationary MDP}
 \label{sec:mdp}
+
+\begin{definition}[Markov Decision Process]
+\label{def:mdp}
+A \emph{Markov decision process} is a tuple $\mathcal{M} = (\mathcal{S}, \mathcal{A}, P, R)$, where $\mathcal{S}$ is a set of states, $\mathcal{A}$ is a set of actions, $P:\mathcal{S}\times\mathcal{A}\times\mathcal{S}\to[0,1]$ is a transition kernel satisfying $\sum_{s'\in\mathcal{S}} P(s'\mid s,a) = 1$ for every $(s,a)\in\mathcal{S}\times\mathcal{A}$, and $R:\mathcal{S}\to\R$ is a reward function. A \emph{policy} $\pi:\mathcal{S}\to\Delta(\mathcal{A})$ maps states to probability distributions over actions, where $\Delta(\mathcal{A})$ denotes the probability simplex over $\mathcal{A}$. $\mathcal{M}$ is \emph{nonstationary} in a covariate $c$ if $P$ and $R$ are permitted to vary with a component of the state that evolves deterministically and monotonically with time, such as a countdown clock.
+\end{definition}
+
+We instantiate Definition~\ref{def:mdp} for a single team's possession of the ball as follows.
 
 \subsection{Episodes}
 An \emph{episode} is a single team's possession: it begins the moment that team gains controlled use of the ball and ends when the ball is lost, a shot is taken, or play is stopped in a way that hands the opponent the restart.
 
 \subsection{State space}
-The state at any point within an episode is
+The state space is $\mathcal{S} = \big(\{1,\dots,Z\}\times\{1,\dots,C\}\big) \cup \{\GOAL, \NOGOAL, \TURN\}$. A non-terminal state is
 \begin{equation}
 s = (z, c), \qquad z \in \{1,\dots,Z\}, \quad c \in \{1,\dots,C\},
 \end{equation}
-where $z$ is the \emph{pitch zone} the ball occupies, taken from a $6\times 4$ grid over the attacking half-space of the pitch (length $\times$ width, with $x=100$ always meaning ``closest to the opponent's goal'' in the possessing team's attacking direction), and $c$ is the \emph{possession-clock bucket}, a discretization of seconds elapsed since the possession began into five bins: $[0,5)$, $[5,10)$, $[10,15)$, $[15,25)$, and $[25,\infty)$ seconds. Two absorbing outcome states close every episode: $\GOAL$ and $\TURN$; a non-scoring shot ($\NOGOAL$) is tracked as a third, separate terminal outcome for efficiency reporting even though it plays the same absorbing role as a turnover from the MDP's point of view.
+where $z$ is the \emph{pitch zone} the ball occupies, taken from a $6\times 4$ grid over the attacking half-space of the pitch (length $\times$ width, with $x=100$ always meaning ``closest to the opponent's goal'' in the possessing team's attacking direction), and $c$ is the \emph{possession-clock bucket}, a discretization of seconds elapsed since the possession began into five bins: $[0,5)$, $[5,10)$, $[10,15)$, $[15,25)$, and $[25,\infty)$ seconds. $\GOAL$, $\NOGOAL$, and $\TURN$ are absorbing terminal states; $\GOAL$ and $\TURN$ close every episode, while a non-scoring shot ($\NOGOAL$) is tracked as a separate terminal outcome for efficiency reporting even though it plays the same absorbing role as a turnover from the MDP's point of view. Table~\ref{tab:hyperparameters} summarizes the resulting state-space cardinality.
 
 \subsection{Action space}
 At each non-terminal state the team on the ball chooses an action
 \begin{equation}
-a \in \{\text{advance}, \text{sideways}, \text{back}, \text{cross}, \text{shot}\},
+a \in \mathcal{A} = \{\text{advance}, \text{sideways}, \text{back}, \text{cross}, \text{shot}\},
 \end{equation}
 capturing the \emph{attempted} decision -- the direction and type of the pass, carry, or shot attempted -- independent of whether it succeeds. This mirrors the basketball MDP's separation of a decision (e.g. ``attempt a three-pointer'') from its outcome (make, miss, or turnover): the outcome of an ``advance'' decision -- successful progression, an intercepted or misplaced pass, a foul won -- is captured by the transition, not the action label.
 
 \subsection{Transitions and nonstationarity}
-Given a state-action pair $(s,a)$ with $s=(z,c)$, the transition distribution
+Given a state-action pair $(s,a)$ with $s=(z,c)$, the transition kernel
 \begin{equation}
 P(s' \mid s, a), \qquad s' \in \{1,\dots,Z\}\times\{1,\dots,C\} \cup \{\GOAL, \NOGOAL, \TURN\},
 \end{equation}
-gives the probability of each destination zone (with the clock advanced to the next bucket, or capped at the final bucket), or of the possession ending. The distribution is explicitly allowed to depend on $c$: this is the direct analogue of shot-clock-dependent transition probabilities in the basketball model, and Section~\ref{sec:results-hazard} shows the dependence is real and, in one respect, the opposite of what a naive shot-clock analogy would predict.
+gives the probability of each destination zone (with the clock advanced to the next bucket, or capped at the final bucket), or of the possession ending. The kernel is explicitly allowed to depend on $c$, in the sense of Definition~\ref{def:mdp}: this is the direct analogue of shot-clock-dependent transition probabilities in the basketball model, and Section~\ref{sec:results-hazard} shows the dependence is real and, in one respect, the opposite of what a naive shot-clock analogy would predict. The reward function is deferred to Section~\ref{sec:valuefunction}, where it is defined jointly with the value function it induces.
 
-\subsection{The Markov property}
-\label{sec:markov}
-The defining assumption of the model is that $P(s' \mid s, a)$ depends only on the current state and action, not on the sequence of states and actions that preceded it: a pass attempted from ``final third, central, 0--5s'' is modeled identically whether the team arrived there via a 25-pass build-up or a single long ball. This is a simplification rather than a claim about football itself -- it is precisely what makes a season of possessions tractable to fit as a single model, and Section~\ref{sec:limitations} returns to where it strains, e.g. its inability to distinguish a fatigued team from a fresh one occupying the same state.
+\begin{assumption}[Markov Property]
+\label{assump:markov}
+$P(s' \mid s, a)$ depends only on the current state and action, not on the sequence of states and actions that preceded it: a pass attempted from ``final third, central, 0--5s'' is modeled identically whether the team arrived there via a 25-pass build-up or a single long ball.
+\end{assumption}
+
+Assumption~\ref{assump:markov} is a modeling simplification rather than a claim about football itself: it is precisely what makes a season of possessions tractable to fit as a single model. Section~\ref{sec:limitations} returns to where it strains, e.g.\ its inability to distinguish a fatigued team from a fresh one occupying the same state.
 
 \section{Bayesian Hierarchical Parametrization}
 \label{sec:hierarchy}
@@ -109,7 +162,28 @@ Football produces far fewer possessions per team per season than basketball prod
 \end{align}
 where $\bar p^{\,\ell}(s,a)$ denotes the posterior-mean outcome distribution at level $\ell$, $\bar p^{\,0}$ is a base rate (uniform over the outcomes empirically observed anywhere in the league for that cell), $\kappa_{\text{league}}, \kappa_{\text{team}}, \kappa_{\text{lineup}}$ are concentration hyperparameters controlling how strongly each level is pulled toward its parent, and $n^{\,\ell}(s,a)$ is the vector of observed transition counts at that level. A sparsely visited $(s,a)$ cell for a given lineup is shrunk heavily toward that team's overall tendency in the same zone/clock state; a frequently visited cell for a settled first-choice lineup is dominated by its own data. We pool across the same hierarchy for the action-choice policy $\pi(a \mid s)$, using a two-level (league $\to$ team) cascade, since altered-policy simulation (Section~\ref{sec:policy-sim}) operates at the team level.
 
-Counts are further weighted by an exponential recency factor $w_k = \rho^{(K-k)/7}$ for a match played $k$ weeks before the most recent matchday $K$ ($\rho = 0.98$), so that current transition estimates reflect a team's most recent tactical identity more than its early-season form while still using the full season's data.
+Counts are further weighted by an exponential recency factor $w_k = \rho^{(K-k)/7}$ for a match played $k$ weeks before the most recent matchday $K$, so that current transition estimates reflect a team's most recent tactical identity more than its early-season form while still using the full season's data. Table~\ref{tab:hyperparameters} reports the state-space cardinality and every hyperparameter value used in the fitted model.
+
+\begin{table}[htbp]
+\centering
+\caption{Model hyperparameters and state-space cardinality.}
+\label{tab:hyperparameters}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Parameter & Symbol & Value \\
+\midrule
+Pitch zones (length $\times$ width grid) & $Z$ & $6\times 4 = 24$ \\
+Possession-clock buckets & $C$ & 5 \\
+Action space size & $|\mathcal{A}|$ & 5 \\
+League-level concentration & $\kappa_{\text{league}}$ & 2.0 \\
+Team-level concentration & $\kappa_{\text{team}}$ & 8.0 \\
+Lineup-level concentration & $\kappa_{\text{lineup}}$ & 8.0 \\
+Recency decay, per week & $\rho$ & 0.98 \\
+Team-average minimum concentration floor & -- & 3.0 \\
+Minimum shots for zone conversion-rate reporting & -- & 15 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{From Lineup MDPs to a Team-Average MDP}
 \label{sec:teamavg}
@@ -142,7 +216,22 @@ Because every state points to other states or to a terminal outcome, the fitted 
 V(s) = \sum_{a} \pi(a \mid s) \sum_{s'} P(s' \mid s,a)\, r(s'), \qquad r(s') = \begin{cases} 1 & s' = \GOAL \\ 0 & s' \in \{\NOGOAL, \TURN\} \\ V(s') & \text{otherwise,} \end{cases}
 \label{eq:bellman}
 \end{equation}
-solved by value iteration: initializing $V \equiv 0$ and repeatedly substituting the current estimate of $V$ into the right-hand side of Equation~\eqref{eq:bellman} until convergence (150 sweeps is more than sufficient given the per-step probability of reaching an absorbing state).
+solved by value iteration: initializing $V \equiv 0$ and repeatedly substituting the current estimate of $V$ into the right-hand side of Equation~\eqref{eq:bellman} until convergence, as summarized in Algorithm~\ref{alg:valueiteration}. Because every non-terminal state retains strictly positive probability of reaching an absorbing state within a bounded number of steps, the update is a contraction and convergence is geometric; 150 sweeps is more than sufficient in practice.
+
+\begin{algorithm}[htbp]
+\caption{Bellman value iteration for the possession-MDP value function}
+\label{alg:valueiteration}
+\KwIn{policy $\pi(a\mid s)$; dynamics $P(s'\mid s,a)$; number of sweeps $T$}
+\KwOut{value function $V(s)$ for every non-terminal state $s$}
+$V(s) \leftarrow 0$ for all $s$\;
+\For{$t \leftarrow 1$ \KwTo $T$}{
+    \For{\emph{each non-terminal state} $s$}{
+        $V'(s) \leftarrow \sum_{a} \pi(a\mid s) \sum_{s'} P(s'\mid s,a)\, r(s')$, with $r(\cdot)$ as in Equation~\eqref{eq:bellman}\;
+    }
+    $V \leftarrow V'$\;
+}
+\Return{$V$}
+\end{algorithm}
 
 Figure~\ref{fig:valuefunction} shows the solved value function for Independiente del Valle, faceted by possession-clock bucket. Value rises smoothly and monotonically with proximity to the opponent's goal in every clock bucket, from under 1\% deep in the team's own defensive third to 12--19\% inside the penalty area -- an order-of-magnitude gradient, and exactly the shape a value function fit to a coherent possession model should have. This also serves as a useful diagnostic: an early, uncorrected version of this computation (in which own-goal events were still being attributed to the scoring team as their own converted shot, and in which pitch-heatmap labels were placed without accounting for the plotting library's vertical-pitch coordinate flip) instead showed defensive-third zones as more valuable than the penalty area, which is the kind of qualitatively implausible result that a value-function sanity check is well suited to catch.
 
@@ -160,7 +249,28 @@ The simulator draws whole possessions forward from the fitted MDPs while propaga
 \begin{equation}
 \tilde P(\cdot \mid s,a) \sim \Dir\big(\alpha_T(s,a)\big),
 \end{equation}
-using the team-average posterior parameters of Section~\ref{sec:teamavg} (or the lineup-level posterior for lineup-specific analysis). This single draw defines one internally consistent possible world for how the team's possessions behave. Episodes are then rolled out from an empirical distribution over possession-start zones: at each state, an action is sampled from the policy $\pi(a\mid s)$, the next state is sampled from the drawn $\tilde P(\cdot \mid s,a)$, and the possession clock advances, until the episode reaches $\GOAL$, $\NOGOAL$, or a maximum-length censor. Repeating this across many posterior draws and many rollouts per draw means the spread across draws -- not only the Monte Carlo noise within a draw -- reflects genuine parameter uncertainty in the fitted MDP.
+using the team-average posterior parameters of Section~\ref{sec:teamavg} (or the lineup-level posterior for lineup-specific analysis). This single draw defines one internally consistent possible world for how the team's possessions behave. Episodes are then rolled out from an empirical distribution over possession-start zones: at each state, an action is sampled from the policy $\pi(a\mid s)$, the next state is sampled from the drawn $\tilde P(\cdot \mid s,a)$, and the possession clock advances, until the episode reaches $\GOAL$, $\NOGOAL$, or a maximum-length censor. Algorithm~\ref{alg:rollout} summarizes the full procedure. Repeating this across many posterior draws and many rollouts per draw means the spread across draws -- not only the Monte Carlo noise within a draw -- reflects genuine parameter uncertainty in the fitted MDP.
+
+\begin{algorithm}[htbp]
+\caption{Posterior-predictive possession rollout}
+\label{alg:rollout}
+\KwIn{posterior parameters $\alpha_T(s,a)$; policy $\pi(a\mid s)$; start-zone distribution $\mu_0$; worlds $W$; rollouts per world $M$}
+\KwOut{simulated outcome statistics across $W$ worlds}
+\For{$w \leftarrow 1$ \KwTo $W$}{
+    draw $\tilde P(\cdot \mid s,a) \sim \Dir\big(\alpha_T(s,a)\big)$ for every $(s,a)$ visited, cached lazily within world $w$\;
+    \For{$m \leftarrow 1$ \KwTo $M$}{
+        sample starting zone $z_0 \sim \mu_0$; set $s \leftarrow (z_0, 0)$\;
+        \Repeat{$s$ is terminal, or a maximum-length censor is reached}{
+            sample action $a \sim \pi(\cdot \mid s)$\;
+            sample next state $s' \sim \tilde P(\cdot \mid s,a)$\;
+            $s \leftarrow s'$\;
+        }
+        record the terminal outcome of episode $m$\;
+    }
+    compute world-$w$ summary statistics (goal rate, shot rate, turnover rate) over the $M$ episodes\;
+}
+\Return{the $W$ world-level summary statistics}
+\end{algorithm}
 
 The simulator deliberately separates the \emph{policy} $\pi(a\mid s)$, how often a team attempts each action type from a given state, from the \emph{dynamics} $P(s'\mid s,a)$ fit in Sections~\ref{sec:hierarchy}--\ref{sec:teamavg}, which describe how the world responds once a decision is attempted. This split is what makes altered-policy simulation meaningful (Section~\ref{sec:policy-sim}): we can reweight $\pi$ to ask ``what happens if this team attempts more crosses and fewer sideways passes'' while leaving the fitted execution quality of every decision exactly as observed.
 
@@ -251,7 +361,27 @@ We define a mechanical ``directness'' policy alteration: in the middle and attac
 
 A first implementation of this comparison ran two independent calls to the simulator -- one under $\pi_{\text{on}}$, one under $\pi_{\text{altered}}$ -- and differenced their simulated goal rates. Because goal rate is a rare-event statistic (roughly 1--2\% per possession even for strong teams), and because each of the two calls draws its own independent posterior sample of the shared dynamics $P(s'\mid s,a)$, this estimator is considerably noisier than it appears: re-running the identical comparison with a different random seed changed Independiente del Valle's estimated effect from $+0.15$ percentage points to $-0.39$ percentage points, a sign flip driven entirely by Monte Carlo noise in two independently-drawn dynamics samples rather than by any real difference in the policies being compared.
 
-We correct this with a paired design: within each simulated ``world,'' both $\pi_{\text{on}}$ and $\pi_{\text{altered}}$ are rolled out against the \emph{same} drawn dynamics sample $\tilde P(\cdot\mid s,a)$, so that only the policy difference -- not independently-redrawn execution quality -- drives the per-world difference in outcome. We further report the 95\% confidence interval of the \emph{mean} paired difference (via the normal approximation to the standard error of the mean across worlds) rather than the predictive spread of the raw per-world differences, since the latter conflates the (wide) uncertainty in any one simulated world with the (much narrower) uncertainty in the average effect the comparison is actually trying to estimate. Figure~\ref{fig:policycomparison} shows the resulting on-policy vs.\ altered-policy comparison for Independiente del Valle under this design.
+We correct this with a paired design: within each simulated ``world,'' both $\pi_{\text{on}}$ and $\pi_{\text{altered}}$ are rolled out against the \emph{same} drawn dynamics sample $\tilde P(\cdot\mid s,a)$, so that only the policy difference -- not independently-redrawn execution quality -- drives the per-world difference in outcome. Algorithm~\ref{alg:paired} summarizes the procedure. We further report the 95\% confidence interval of the \emph{mean} paired difference,
+\begin{equation}
+\bar\Delta \pm 1.96\, \widehat{\mathrm{SE}}(\bar\Delta), \qquad \widehat{\mathrm{SE}}(\bar\Delta) = \frac{\hat\sigma_\Delta}{\sqrt{W}},
+\label{eq:meanci}
+\end{equation}
+via the normal approximation to the standard error of the mean across the $W$ simulated worlds ($\hat\sigma_\Delta$ the sample standard deviation of the per-world differences $\Delta(w)$), rather than the predictive spread (e.g.\ the 2.5th and 97.5th percentiles) of the raw per-world differences used elsewhere in this paper for single-policy outcome statistics. The two intervals answer different questions: the predictive spread describes the range of outcomes one simulated season might show, while Equation~\eqref{eq:meanci} describes how precisely the \emph{average} effect of the policy change is estimated, and it is the latter that a claim of the form ``this team benefits from playing more directly'' requires. Figure~\ref{fig:policycomparison} shows the resulting on-policy vs.\ altered-policy comparison for Independiente del Valle under this design.
+
+\begin{algorithm}[htbp]
+\caption{Paired posterior-predictive policy comparison}
+\label{alg:paired}
+\KwIn{posterior parameters $\alpha_T(s,a)$; policies $\pi_{\text{on}}, \pi_{\text{altered}}$; start-zone distribution $\mu_0$; worlds $W$; rollouts per policy per world $M$}
+\KwOut{mean paired effect $\bar\Delta$ and its 95\% confidence interval}
+\For{$w \leftarrow 1$ \KwTo $W$}{
+    draw $\tilde P(\cdot \mid s,a) \sim \Dir\big(\alpha_T(s,a)\big)$ for every $(s,a)$ visited\tcp*{shared by both policies}
+    roll out $M$ episodes under $\pi_{\text{on}}$ against $\tilde P$ (Algorithm~\ref{alg:rollout}, inner loop); record goal rate $\hat g_{\text{on}}(w)$\;
+    roll out $M$ episodes under $\pi_{\text{altered}}$ against the \emph{same} $\tilde P$; record goal rate $\hat g_{\text{altered}}(w)$\;
+    $\Delta(w) \leftarrow \hat g_{\text{altered}}(w) - \hat g_{\text{on}}(w)$\;
+}
+$\bar\Delta \leftarrow \frac{1}{W}\sum_w \Delta(w)$; $\hat\sigma_\Delta \leftarrow$ sample standard deviation of $\{\Delta(w)\}_{w=1}^W$\;
+\Return{$\bar\Delta$ and $\bar\Delta \pm 1.96\, \hat\sigma_\Delta/\sqrt{W}$}
+\end{algorithm}
 
 \begin{figure}[htbp]
 \centering
@@ -279,14 +409,17 @@ The transition probabilities $P(s'\mid s,a)$ fit in Sections~\ref{sec:hierarchy}
 \section{Limitations and Future Work}
 \label{sec:limitations}
 
-The zone/clock/action discretization is coarse by design; finer grids would need materially more matches of data per lineup before hierarchical shrinkage stops dominating the lineup-level estimates. Set pieces (corners, free kicks, throw-ins) are folded into the general turnover/restart handling rather than modeled as their own sub-MDPs with set-piece-specific routines. The Markov assumption of Section~\ref{sec:markov} means the model cannot represent history-dependent effects such as fatigue, momentum, or game-state (scoreline) effects on decision-making, all of which are plausible drivers of real transition probabilities that the current state representation does not capture. The game-theoretic discussion of Section~\ref{sec:gametheory} is qualitative; no opponent-adaptation term is fit into the model, and the paired-simulation correction of Section~\ref{sec:pairing}, while it resolves the sign-flip instability we observed, still inherits whatever bias the fixed-dynamics assumption itself introduces for large policy perturbations.
+The zone/clock/action discretization is coarse by design; finer grids would need materially more matches of data per lineup before hierarchical shrinkage stops dominating the lineup-level estimates. Set pieces (corners, free kicks, throw-ins) are folded into the general turnover/restart handling rather than modeled as their own sub-MDPs with set-piece-specific routines. The Markov property of Assumption~\ref{assump:markov} means the model cannot represent history-dependent effects such as fatigue, momentum, or game-state (scoreline) effects on decision-making, all of which are plausible drivers of real transition probabilities that the current state representation does not capture. The game-theoretic discussion of Section~\ref{sec:gametheory} is qualitative; no opponent-adaptation term is fit into the model, and the paired-simulation correction of Section~\ref{sec:pairing}, while it resolves the sign-flip instability we observed, still inherits whatever bias the fixed-dynamics assumption itself introduces for large policy perturbations.
 
 \section{Conclusion}
 
 We have adapted a shot-clock-dependent basketball possession-MDP framework to football, replacing the shot clock with an endogenous possession clock, and shown that the resulting model is fittable to a single season of league event data via a three-level Bayesian hierarchy and a lineup-to-team-average transition-weighting scheme with a provable expected-count consistency property. The fitted model's value function, possession-clock hazard curves, and build-up-style geometry all produce qualitatively sensible, non-trivial results, and its explicit separation of policy from dynamics supports counterfactual policy simulation -- provided that rare-event comparisons are estimated with a paired design, which we show is necessary rather than optional. The game-theoretic caveat of Section~\ref{sec:gametheory} bounds how far any single-agent counterfactual simulation of this kind can be trusted, and motivates the natural next step of an opponent-adaptive extension.
 
-\section*{Software and Reproducibility}
-The complete implementation -- possession segmentation, hierarchical model fitting, the team-average weighting scheme, the Monte Carlo simulator, value iteration, and every figure in this paper -- is available in the \texttt{PossessionMDP/} directory of this project's repository, along with the underlying Opta-style event data for the season analyzed.
+\section*{Data and Code Availability Statement}
+The complete implementation -- possession segmentation, hierarchical model fitting, the team-average weighting scheme, the Monte Carlo simulator, value iteration, and every figure in this paper -- is available in the \texttt{PossessionMDP/} directory of the project repository, along with the underlying Opta/Stats Perform event data for the season analyzed.
+
+\section*{Acknowledgments}
+We thank the data provider for the underlying Opta/Stats Perform event feed and the Ecuadorian Liga Pro clubs whose 2026-season matches constitute the dataset analyzed in this paper.
 
 \bibliographystyle{apalike}
 \begin{thebibliography}{1}
