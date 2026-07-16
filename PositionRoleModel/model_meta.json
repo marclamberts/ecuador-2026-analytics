@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-07-16T11:39:07.685750Z",
+  "min_minutes": 450,
+  "n_players": 250,
+  "features": [
+    "press_height",
+    "pass_width",
+    "recv_width",
+    "def_width",
+    "touch_height",
+    "touch_mobility",
+    "central_touch_share",
+    "wide_touch_share",
+    "halfspace_touch_share",
+    "box_touch_share",
+    "final3_touch_share",
+    "deep_touch_share",
+    "high_def_action_share",
+    "received_passes_p90",
+    "progressive_runs_p90",
+    "aerial_win_pct",
+    "crosses_p90",
+    "take_ons_p90",
+    "progressive_carries_p90",
+    "progressive_passes_p90",
+    "def_actions_p90"
+  ],
+  "groups": {
+    "DEF": {
+      "k": 4,
+      "silhouette": 0.2085326982484465,
+      "n_players": 94
+    },
+    "MID": {
+      "k": 4,
+      "silhouette": 0.20892079106309625,
+      "n_players": 111
+    },
+    "FWD": {
+      "k": 3,
+      "silhouette": 0.1486149469377998,
+      "n_players": 45
+    }
+  }
+}
